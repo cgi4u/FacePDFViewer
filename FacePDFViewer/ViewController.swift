@@ -15,8 +15,6 @@ class ViewController: UIViewController {
     
     @IBOutlet var sceneView: ARSCNView!
     
-    //let session = ARSession()
-    
     let virtualPhoneNode = SCNNode()
     var virtualScreenNode: SCNNode = {
         let screenGeometry = SCNPlane(width: 1, height: 1)
@@ -25,13 +23,17 @@ class ViewController: UIViewController {
         return SCNNode(geometry: screenGeometry)
     }()
     
-   
-    var notMovingNode = SCNNode(geometry: SCNSphere(radius: 0.001))
-    var lookPointNode = SCNNode(geometry: SCNSphere(radius: 0.001))
+    var lookPointNode = SCNNode(geometry: SCNSphere(radius: 0.01))
     
     let leftEyeNode = SCNNode(geometry: SCNSphere(radius: 0.01))
     let rightEyeNode = SCNNode(geometry: SCNSphere(radius: 0.01))
     let midpointNode = SCNNode(geometry: SCNSphere(radius: 0.01))
+    
+    let lookPointCircleView = UIView(frame: CGRect(x: 100, y: 100, width: 10, height: 10))
+    
+    var points:[simd_float2] = []
+    let numOfPoints = 10
+    var totalPoint = simd_float2(0, 0)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,15 +45,28 @@ class ViewController: UIViewController {
             return
         }
         
+        print(UIScreen.main.bounds.size)
+        print(UIScreen.main.nativeBounds.size)
+        print(UIDevice.modelName)
+        print(UIDevice.modelMeterSize.0)
+        print(UIDevice.modelMeterSize.1)
+        
         sceneView.session.run(ARFaceTrackingConfiguration())
         sceneView.delegate = self
+
+        lookPointNode.geometry?.firstMaterial?.diffuse.contents = UIColor.red
         
-        sceneView.scene.rootNode.addChildNode(lookPointNode)
-        sceneView.pointOfView?.addChildNode(notMovingNode)
-        notMovingNode.position = SCNVector3(0.001, 0.001, -0.01)
+        leftEyeNode.geometry?.firstMaterial?.diffuse.contents = UIColor.clear
+        rightEyeNode.geometry?.firstMaterial?.diffuse.contents = UIColor.clear
+        midpointNode.geometry?.firstMaterial?.diffuse.contents = UIColor.clear
+        
+        sceneView.pointOfView?.addChildNode(lookPointNode)
+        lookPointNode.position = SCNVector3(0, 0, -1)
         sceneView.pointOfView?.addChildNode(virtualPhoneNode)
         virtualPhoneNode.addChildNode(virtualScreenNode)
-        virtualScreenNode.position = SCNVector3(0, 0, -0.01)
+        
+        lookPointCircleView.backgroundColor = UIColor.red
+        view.addSubview(lookPointCircleView)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -71,57 +86,16 @@ class ViewController: UIViewController {
         pdfView.document = pdfDocument
     }
     
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        let touch = touches.first!
+        print(touch.location(in: view))
+    }
+    
     var count = 0
-}
-
-/*
-extension ViewController: ARSessionDelegate {
-
-    func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
-        for anchor in anchors {
-            if anchor is ARFaceAnchor {
-                print ("face added")
-            } else {
-                print ("other added")
-            }
-        }
-    }
     
-    func session(_ session: ARSession, didRemove anchors: [ARAnchor]) {
-        for anchor in anchors {
-            if anchor is ARFaceAnchor {
-                print ("face removed")
-            } else {
-                print ("other added")
-            }
-        }
-    }
-
-    func session(_ session: ARSession, didUpdate frame: ARFrame) {
-        print (frame.camera.transform[3])
-    }
- 
-    
-    func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
-        if count != 60 {
-            count += 1
-            return
-        } else {
-            count = 0
-        }
-        
-        for anchor in anchors {
-            if let anchor = anchor as? ARFaceAnchor {
-                print(anchor.lookAtPoint)
-                print(anchor.transform)
-                //print(anchor.transform[3] + simd_float4(anchor.lookAtPoint.x, anchor.lookAtPoint.y, anchor.lookAtPoint.z, 0))
-            }
-        }
-    }
- 
+    //var positions: Array<> = Array()
+    //let numPositions = 10;
 }
- 
- */
 
 extension ViewController: ARSCNViewDelegate {
     func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
@@ -148,7 +122,6 @@ extension ViewController: ARSCNViewDelegate {
                                        SCNHitTestOption.ignoreChildNodes.rawValue : false,
                                        SCNHitTestOption.ignoreHiddenNodes.rawValue : false]
         
-        
         // 방법1: 얼굴과 lookAtPoint 사이 선과 면의 교점
         let hitTestLookPoint = virtualPhoneNode.hitTestWithSegment(from: virtualPhoneNode.convertPosition(node.worldPosition, from:nil), to: virtualPhoneNode.convertPosition(SCNVector3(faceAnchor.lookAtPoint), from: node), options: options)
         
@@ -159,36 +132,65 @@ extension ViewController: ARSCNViewDelegate {
         
         let hitTestLookPoint2 = virtualPhoneNode.hitTestWithSegment(from: virtualPhoneNode.convertPosition(midpointNode.worldPosition, from:nil), to: virtualPhoneNode.convertPosition(SCNVector3(faceAnchor.lookAtPoint), from: node), options: options)
         
-        /*
-        //방법3: 두 눈에서 뻗어나가는 직선과 면의 교점 2개의 중점(2와 실질적으로 동일)
-        let hitTestLeftEyeLookPoint = virtualPhoneNode.hitTestWithSegment(from: virtualPhoneNode.convertPosition(rightEyeNode.worldPosition, from:nil), to: virtualPhoneNode.convertPosition(rightEyeEndNode.worldPosition, from: nil), options: options)
-        let hitTestRightEyeLookPoint = virtualPhoneNode.hitTestWithSegment(from: virtualPhoneNode.convertPosition(leftEyeNode.worldPosition, from:nil), to: virtualPhoneNode.convertPosition(leftEyeEndNode.worldPosition, from: nil), options: options)
-         */
+        if !hitTestLookPoint.isEmpty {
+            lookPointNode.position = SCNVector3(hitTestLookPoint[0].localCoordinates.x * 10, hitTestLookPoint[0].localCoordinates.y * 10, -1)
+            
+            let x = UIScreen.main.bounds.size.width / 2 + CGFloat(hitTestLookPoint[0].localCoordinates.x) * (UIScreen.main.bounds.size.width / CGFloat(UIDevice.modelMeterSize.0))
+            let y = CGFloat(-hitTestLookPoint[0].localCoordinates.y) * UIScreen.main.bounds.size.height / CGFloat(UIDevice.modelMeterSize.1)
+            
+            
+            if points.count == numOfPoints {
+                totalPoint -= points[0]
+                points.remove(at: 0)
+            }
+            points.append(simd_float2(Float(x), Float(y)))
+            totalPoint += points[points.count - 1]
+            
+            let avgX = CGFloat(totalPoint.x / Float(points.count))
+            let avgY = CGFloat(totalPoint.y / Float(points.count))
+            
+            DispatchQueue.main.async {
+                let xDistance = avgX - self.lookPointCircleView.frame.minX
+                let yDistance = avgY - self.lookPointCircleView.frame.minY
+                let distance = sqrt(xDistance * xDistance + yDistance * yDistance)
+                //print(distance)
+                
+                let eyeBlinkRight = faceAnchor.blendShapes[.eyeBlinkRight]?.floatValue ?? 1.0
+                let eyeBlinkLeft = faceAnchor.blendShapes[.eyeBlinkLeft]?.floatValue ?? 1.0
+                print("left: \(eyeBlinkLeft) right: \(eyeBlinkRight)")
+                
+                if (distance > 10) {
+                    if (eyeBlinkRight - eyeBlinkLeft > 0.2){
+                        self.lookPointCircleView.frame = CGRect(x: avgX, y: avgY, width: 20, height: 20)
+                    }
+                    else{
+                        self.lookPointCircleView.frame = CGRect(x: avgX, y: avgY, width: 10, height: 10)
+                    }
+                }
+            }
+        }
         
         count += 1
         if count == 60 {
             if !hitTestLookPoint.isEmpty {
-                print("Case 1")
-                print(hitTestLookPoint[0].localCoordinates)
-                print(renderer.projectPoint(hitTestLookPoint[0].worldCoordinates))
+                //print("Case 1")
+                //print(hitTestLookPoint[0].localCoordinates)
+            
+                //print("x: \(hitTestLookPoint[0].localCoordinates.x * (Float(UIScreen.main.bounds.size.width) / UIDevice.modelPhysicalSize.0))")
+                //print("y: \(Float(UIScreen.main.bounds.size.height) + hitTestLookPoint[0].localCoordinates.y * (Float(UIScreen.main.bounds.size.height) / UIDevice.modelPhysicalSize.1))")
             }
             
             if !hitTestLookPoint2.isEmpty {
-                print("Case 2")
-                print(hitTestLookPoint2[0].localCoordinates)
-                print(renderer.projectPoint(hitTestLookPoint2[0].worldCoordinates))
+                //print("Case 2")
+                //print(hitTestLookPoint2[0].localCoordinates)
+                //print(renderer.projectPoint(hitTestLookPoint[0].worldCoordinates))
+                let x = UIScreen.main.bounds.size.width / 2 + CGFloat(hitTestLookPoint2[0].localCoordinates.x) * (UIScreen.main.bounds.size.width / CGFloat(UIDevice.modelMeterSize.0))
+                let y = CGFloat(-hitTestLookPoint2[0].localCoordinates.y) * (UIScreen.main.bounds.size.height / CGFloat(UIDevice.modelMeterSize.1))
+                
+                //print("x: \(x), y: \(y)")
+                //print("local x: \(hitTestLookPoint2[0].localCoordinates.x), local y: \(hitTestLookPoint2[0].localCoordinates.y)")
+                //print("x: \(x), y: \(y)");
             }
-            
-            /*
-            if !hitTestLeftEyeLookPoint.isEmpty,
-                !hitTestRightEyeLookPoint.isEmpty {
-                print("Case 3")
-                let hitTestLookPoint3 = SCNVector3((hitTestLeftEyeLookPoint[0].localCoordinates.x + hitTestRightEyeLookPoint[0].localCoordinates.x) / 2,
-                                                  (hitTestLeftEyeLookPoint[0].localCoordinates.y + hitTestRightEyeLookPoint[0].localCoordinates.y) / 2,
-                                                  (hitTestLeftEyeLookPoint[0].localCoordinates.z + hitTestRightEyeLookPoint[0].localCoordinates.z) / 2)
-                print(hitTestLookPoint3)
-            }
-            */
             
             count = 0
         }
