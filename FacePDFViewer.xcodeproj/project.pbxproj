@@ -15,6 +15,7 @@
 		E2865831228BCE420097A258 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E286582F228BCE420097A258 /* LaunchScreen.storyboard */; };
 		E286583C228BCE420097A258 /* FacePDFViewerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E286583B228BCE420097A258 /* FacePDFViewerTests.swift */; };
 		E2865847228BCE420097A258 /* FacePDFViewerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2865846228BCE420097A258 /* FacePDFViewerUITests.swift */; };
+		E2B8EBB02293EA81005B56E9 /* FaceGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2B8EBAF2293EA81005B56E9 /* FaceGestureRecognizer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +50,7 @@
 		E2865842228BCE420097A258 /* FacePDFViewerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FacePDFViewerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2865846228BCE420097A258 /* FacePDFViewerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FacePDFViewerUITests.swift; sourceTree = "<group>"; };
 		E2865848228BCE420097A258 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E2B8EBAF2293EA81005B56E9 /* FaceGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceGestureRecognizer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,12 +102,9 @@
 			isa = PBXGroup;
 			children = (
 				E2865826228BCE410097A258 /* AppDelegate.swift */,
-				E2865828228BCE410097A258 /* ViewController.swift */,
-				E286582D228BCE420097A258 /* Assets.xcassets */,
-				E286582A228BCE410097A258 /* Main.storyboard */,
-				E286582F228BCE420097A258 /* LaunchScreen.storyboard */,
-				E2865832228BCE420097A258 /* Info.plist */,
-				E267757D2292A54D00FF8C05 /* Extensions.swift */,
+				E2B8EBAD2293EA33005B56E9 /* Interfaces */,
+				E2B8EBAB2293EA04005B56E9 /* Classes */,
+				E2B8EBAE2293EA4E005B56E9 /* Supporting Files */,
 			);
 			path = FacePDFViewer;
 			sourceTree = "<group>";
@@ -126,6 +125,50 @@
 				E2865848228BCE420097A258 /* Info.plist */,
 			);
 			path = FacePDFViewerUITests;
+			sourceTree = "<group>";
+		};
+		E2B8EBAA2293E9F4005B56E9 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				E2865828228BCE410097A258 /* ViewController.swift */,
+			);
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		E2B8EBAB2293EA04005B56E9 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				E2B8EBAA2293E9F4005B56E9 /* ViewController */,
+				E2B8EBAC2293EA11005B56E9 /* FaceGestureRecognizer */,
+			);
+			path = Classes;
+			sourceTree = "<group>";
+		};
+		E2B8EBAC2293EA11005B56E9 /* FaceGestureRecognizer */ = {
+			isa = PBXGroup;
+			children = (
+				E267757D2292A54D00FF8C05 /* Extensions.swift */,
+				E2B8EBAF2293EA81005B56E9 /* FaceGestureRecognizer.swift */,
+			);
+			path = FaceGestureRecognizer;
+			sourceTree = "<group>";
+		};
+		E2B8EBAD2293EA33005B56E9 /* Interfaces */ = {
+			isa = PBXGroup;
+			children = (
+				E286582A228BCE410097A258 /* Main.storyboard */,
+				E286582F228BCE420097A258 /* LaunchScreen.storyboard */,
+			);
+			path = Interfaces;
+			sourceTree = "<group>";
+		};
+		E2B8EBAE2293EA4E005B56E9 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				E286582D228BCE420097A258 /* Assets.xcassets */,
+				E2865832228BCE420097A258 /* Info.plist */,
+			);
+			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -259,6 +302,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E2B8EBB02293EA81005B56E9 /* FaceGestureRecognizer.swift in Sources */,
 				E2865829228BCE410097A258 /* ViewController.swift in Sources */,
 				E267757E2292A54D00FF8C05 /* Extensions.swift in Sources */,
 				E2865827228BCE410097A258 /* AppDelegate.swift in Sources */,
@@ -438,7 +482,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 9QW52KK583;
-				INFOPLIST_FILE = FacePDFViewer/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/FacePDFViewer/Supporting Files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -456,7 +500,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 9QW52KK583;
-				INFOPLIST_FILE = FacePDFViewer/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/FacePDFViewer/Supporting Files/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
