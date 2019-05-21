@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E267757E2292A54D00FF8C05 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E267757D2292A54D00FF8C05 /* Extensions.swift */; };
 		E2865827228BCE410097A258 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2865826228BCE410097A258 /* AppDelegate.swift */; };
 		E2865829228BCE410097A258 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2865828228BCE410097A258 /* ViewController.swift */; };
 		E286582C228BCE410097A258 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E286582A228BCE410097A258 /* Main.storyboard */; };
@@ -34,6 +35,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		E267757D2292A54D00FF8C05 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		E2865823228BCE410097A258 /* FacePDFViewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FacePDFViewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2865826228BCE410097A258 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E2865828228BCE410097A258 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -99,10 +101,11 @@
 			children = (
 				E2865826228BCE410097A258 /* AppDelegate.swift */,
 				E2865828228BCE410097A258 /* ViewController.swift */,
-				E286582A228BCE410097A258 /* Main.storyboard */,
 				E286582D228BCE420097A258 /* Assets.xcassets */,
+				E286582A228BCE410097A258 /* Main.storyboard */,
 				E286582F228BCE420097A258 /* LaunchScreen.storyboard */,
 				E2865832228BCE420097A258 /* Info.plist */,
+				E267757D2292A54D00FF8C05 /* Extensions.swift */,
 			);
 			path = FacePDFViewer;
 			sourceTree = "<group>";
@@ -257,6 +260,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E2865829228BCE410097A258 /* ViewController.swift in Sources */,
+				E267757E2292A54D00FF8C05 /* Extensions.swift in Sources */,
 				E2865827228BCE410097A258 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -433,7 +437,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 9QW52KK583;
+				DEVELOPMENT_TEAM = F59E6VU42S;
 				INFOPLIST_FILE = FacePDFViewer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -451,7 +455,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 9QW52KK583;
+				DEVELOPMENT_TEAM = F59E6VU42S;
 				INFOPLIST_FILE = FacePDFViewer/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
