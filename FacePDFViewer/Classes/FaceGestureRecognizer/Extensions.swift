@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import ARKit
 
 public extension UIDevice {
     static let modelName: String = {

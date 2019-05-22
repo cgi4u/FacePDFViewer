@@ -12,11 +12,17 @@ import ARKit
 import SceneKit
 
 class ViewController: UIViewController {
-    let faceGestureRecognizer = FaceGestureRecognizer()
+    var faceGestureRecognizer: FaceGestureRecognizer?
+    let lookPointDotView = UIView(frame: CGRect(x: 10, y: 10, width: 10, height: 10))
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        faceGestureRecognizer.delegate = self
+        
+        lookPointDotView.backgroundColor = UIColor.red
+        view.addSubview(lookPointDotView)
+        
+        faceGestureRecognizer = FaceGestureRecognizer(targetView: view)
+        faceGestureRecognizer?.delegate = self
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -36,19 +42,16 @@ class ViewController: UIViewController {
         pdfView.document = pdfDocument
     }
     
+    /*
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         let touch = touches.first!
         print(touch.location(in: view))
     }
-    
-    var count = 0
-    
-    //var positions: Array<> = Array()
-    //let numPositions = 10;
+    */
 }
 
 extension ViewController: FaceGestureRecognizerDelegate {
     func lookAtPoint(_ point: CGPoint) {
-        print(point)
+        lookPointDotView.frame = CGRect(origin: point, size: lookPointDotView.frame.size)
     }
 }

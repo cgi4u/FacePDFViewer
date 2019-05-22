@@ -15,31 +15,41 @@ protocol FaceGestureRecognizerDelegate {
 
 class FaceGestureRecognizer: NSObject {
     var delegate: FaceGestureRecognizerDelegate?
-    let sceneView: ARSCNView
+    let sceneView = ARSCNView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
     
+    // SceneKit Nodes
     let virtualPhoneNode = SCNNode()
     var virtualScreenNode: SCNNode = {
         let screenGeometry = SCNPlane(width: 1, height: 1)
-        screenGeometry.firstMaterial?.isDoubleSided = true
         screenGeometry.firstMaterial?.diffuse.contents = UIColor.clear
         return SCNNode(geometry: screenGeometry)
     }()
+    let midpointNode = SCNNode()
     
-    let leftEyeNode = SCNNode(geometry: SCNSphere(radius: 0.01))
-    let rightEyeNode = SCNNode(geometry: SCNSphere(radius: 0.01))
-    let midpointNode = SCNNode(geometry: SCNSphere(radius: 0.01))
-    
+    // Screen size by point for scaling
     let screenWidth = Float(UIScreen.main.bounds.width)
     let screenHeight = Float(UIScreen.main.bounds.height)
     
-    var points:[simd_float2] = []
+    // For the average look point
+    var lookPoints:[simd_float2] = []
     let maxPointNum = 10
+    let thresholdDistance = Float(5)
     
-    override init(){
-        sceneView = ARSCNView(frame: UIScreen.main.bounds)
-        sceneView.scene.background.contents = UIColor.clear
+    init(targetView: UIView){
         super.init()
+
+        virtualPhoneNode.addChildNode(virtualScreenNode)
+        sceneView.pointOfView?.addChildNode(self.virtualPhoneNode)
+        
+        sceneView.isHidden = true
+        sceneView.frame = targetView.frame
+        sceneView.session.run(ARFaceTrackingConfiguration())
         sceneView.delegate = self
+        
+        DispatchQueue.main.async {
+            targetView.addSubview(self.sceneView)
+            targetView.sendSubviewToBack(self.sceneView)
+        }
     }
 }
 
@@ -48,9 +58,6 @@ extension FaceGestureRecognizer: ARSCNViewDelegate {
         guard anchor is ARFaceAnchor else {
             return
         }
-        
-        node.addChildNode(leftEyeNode)
-        node.addChildNode(rightEyeNode)
         node.addChildNode(midpointNode)
     }
     
@@ -61,41 +68,43 @@ extension FaceGestureRecognizer: ARSCNViewDelegate {
         }
         
         let options : [String: Any] = [SCNHitTestOption.backFaceCulling.rawValue: false,
-                                       SCNHitTestOption.searchMode.rawValue: 1,
-                                       SCNHitTestOption.ignoreChildNodes.rawValue : false,
-                                       SCNHitTestOption.ignoreHiddenNodes.rawValue : false]
+                                        SCNHitTestOption.searchMode.rawValue: 1,
+                                        SCNHitTestOption.ignoreChildNodes.rawValue : false]
         
-        leftEyeNode.transform = SCNMatrix4(faceAnchor.leftEyeTransform)
-        rightEyeNode.transform = SCNMatrix4(faceAnchor.rightEyeTransform)
-        midpointNode.simdPosition = (leftEyeNode.simdPosition + rightEyeNode.simdPosition) / 2
-        
+        let midPosition = (faceAnchor.leftEyeTransform[3] + faceAnchor.rightEyeTransform[3]) / 2
+        midpointNode.simdPosition = simd_float3(midPosition.x, midPosition.y, midPosition.z)
+    
         let hitTestLookPoint = virtualPhoneNode.hitTestWithSegment(from: virtualPhoneNode.convertPosition(midpointNode.worldPosition, from:nil), to: virtualPhoneNode.convertPosition(SCNVector3(faceAnchor.lookAtPoint), from: node), options: options)
         
         if hitTestLookPoint.isEmpty {
             return
         }
         
-        let x = screenWidth / 2 + hitTestLookPoint[0].localCoordinates.x * (screenWidth / UIDevice.modelMeterSize.0)
-        let y = -hitTestLookPoint[0].localCoordinates.y * screenHeight / UIDevice.modelMeterSize.1
-        let newPoint = simd_float2(x, y)
+        let xPoint = screenWidth / 2 + hitTestLookPoint[0].localCoordinates.x * screenWidth / UIDevice.modelMeterSize.0
+        let yPoint = -hitTestLookPoint[0].localCoordinates.y * screenHeight / UIDevice.modelMeterSize.1
+        let newPoint = simd_float2(xPoint, yPoint)
         
-        var totalPoint = points.reduce(simd_float2(0, 0)) { (s1, s2) -> simd_float2 in
+        var totalPoint = lookPoints.reduce(simd_float2(0, 0)) { (s1, s2) -> simd_float2 in
             return s1 + s2
         }
         
-        let lastAvgPoint = points.count == 0 ? simd_float2(0, 0) : totalPoint / Float(points.count)
+        let lastAvgPoint = lookPoints.count == 0 ? simd_float2(0, 0) : totalPoint / Float(lookPoints.count)
         
         totalPoint += newPoint
-        points.append(newPoint)
-        if (points.count > maxPointNum){
-            totalPoint -= points[0]
-            points.remove(at: 0)
+        lookPoints.append(newPoint)
+        if lookPoints.count > maxPointNum {
+            totalPoint -= lookPoints[0]
+            lookPoints.remove(at: 0)
         }
         
-        let newAvgPoint = totalPoint / Float(points.count)
+        let newAvgPoint = totalPoint / Float(lookPoints.count)
         
-        if (distance(lastAvgPoint, newAvgPoint) < 10){
-            delegate.lookAtPoint(CGPoint(x: CGFloat(newAvgPoint.x), y: CGFloat(newAvgPoint.y)))
+        //print(distance(lastAvgPoint, newAvgPoint))
+        if distance(lastAvgPoint, newAvgPoint) > thresholdDistance {
+            //print(newAvgPoint)
+            DispatchQueue.main.async {
+                delegate.lookAtPoint(CGPoint(x: CGFloat(newAvgPoint.x), y: CGFloat(newAvgPoint.y)))
+            }
         }
     }
 }
