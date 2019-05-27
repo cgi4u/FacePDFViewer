@@ -7,15 +7,40 @@
 //
 
 import UIKit
+import ARKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        /*guard let window = window else { return false }
+        
+        let view = UIView(frame: CGRect(x: 100, y: 100, width: 100, height: 100))
+        view.backgroundColor = UIColor.green
+        let viewCotroller = UIViewController(nibName: nil, bundle: nil)
+        viewCotroller.view = view
+        
+        
+        let rootViewController = window.rootViewController
+        window.rootViewController = viewCotroller
+        if let rootViewController = rootViewController {
+            window.rootViewController?.present(rootViewController, animated: false, completion: nil)
+        }*/
+        
+        // 이렇게하면 UIViewController 하나밖에 안뜸
+        /*
+        let view = UIView(frame: CGRect(x: 100, y: 100, width: 100, height: 100))
+        let viewController = UIViewController(nibName: nil, bundle: nil)
+        viewController.view = view
+        
+        if let window = UIApplication.shared.delegate?.window ?? nil {
+            window.rootViewController = viewController
+        }
+        */
+        
         return true
     }
 
@@ -42,5 +67,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
 
+}
+
+class TestViewController: UIViewController {
+    
 }
 

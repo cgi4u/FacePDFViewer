@@ -11,8 +11,8 @@ import PDFKit
 import ARKit
 import SceneKit
 
-class ViewController: UIViewController {
-    var faceGestureRecognizer: FaceGestureRecognizer?
+class FacePDFViewController: UIViewController {
+    var faceGestureRecognizer: LookPointRecognizer?
     let lookPointDotView = UIView(frame: CGRect(x: 10, y: 10, width: 10, height: 10))
     
     override func viewDidLoad() {
@@ -21,7 +21,7 @@ class ViewController: UIViewController {
         lookPointDotView.backgroundColor = UIColor.red
         view.addSubview(lookPointDotView)
         
-        faceGestureRecognizer = FaceGestureRecognizer(targetView: view)
+        faceGestureRecognizer = LookPointRecognizer(targetView: view)
         faceGestureRecognizer?.delegate = self
     }
 
@@ -50,7 +50,7 @@ class ViewController: UIViewController {
     */
 }
 
-extension ViewController: FaceGestureRecognizerDelegate {
+extension FacePDFViewController: LookPointRecognizerDelegate {
     func lookAtPoint(_ point: CGPoint) {
         lookPointDotView.frame = CGRect(origin: point, size: lookPointDotView.frame.size)
     }
