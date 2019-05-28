@@ -80,6 +80,17 @@ extension FaceGestureRecognitionSession: ARSessionDelegate {
         }
         let faceAnchor = faceAnchors[0]
         
+        // 현재 양 눈이 감긴 상태(blendShape 값)를 recognizer에 전달합니다.
+        if let leftBlinkShape = faceAnchor.blendShapes[.eyeBlinkLeft] as? Double,
+            let rightBlinkShape = faceAnchor.blendShapes[.eyeBlinkRight] as? Double {
+            for recognizer in recognizers {
+                DispatchQueue.main.async {
+                    recognizer.onEyeBlinkShape(left: leftBlinkShape, right: rightBlinkShape)
+                }
+            }
+        }
+        
+        // 현재 보고 있는 지점을 recognizer에 전달합니다.
         faceNode.simdTransform = faceAnchor.transform
         
         let midpointPosition = (faceAnchor.leftEyeTransform[3] + faceAnchor.rightEyeTransform[3]) / 2
@@ -101,16 +112,7 @@ extension FaceGestureRecognitionSession: ARSessionDelegate {
         
         for recognizer in recognizers {
             DispatchQueue.main.async {
-                // 현재 보고 있는 지점을 recognizer에 전달합니다.
                 recognizer.onLookAtPoint(currentPoint)
-            }
-            
-            if let leftBlinkShape = faceAnchor.blendShapes[.eyeBlinkLeft] as? Double,
-                let rightBlinkShape = faceAnchor.blendShapes[.eyeBlinkRight] as? Double {
-                DispatchQueue.main.async {
-                    // 현재 양 눈이 감긴 상태(blendShape 값)를 recognizer에 전달합니다.
-                    recognizer.onEyeBlinkShape(left: leftBlinkShape, right: rightBlinkShape)
-                }
             }
         }
         
