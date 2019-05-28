@@ -18,7 +18,7 @@ protocol LookPointRecognizerDelegate: class {
 class LookPointRecognizer: FaceGestureRecognizer {
     weak var delegate: LookPointRecognizerDelegate?
     
-    override func onLookAtPoint(_ point: CGPoint) {
+    func handleLookPoint(_ point: CGPoint) {
         guard let delegate = delegate else { return }
         
         delegate.lookAt(point)

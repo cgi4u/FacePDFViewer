@@ -17,7 +17,7 @@ import ARKit
 class FaceGestureRecognitionSession: NSObject {
     static let shared = FaceGestureRecognitionSession()
     
-    //Not use view itself, only use scene and session attached to it.
+    // Not use view itself, only use scene and session attached to it.
     let sceneView = ARSCNView()
     
     let screenWidth = Float(UIScreen.main.bounds.width)
@@ -33,7 +33,7 @@ class FaceGestureRecognitionSession: NSObject {
     }()
     let eyeMidpointNode = SCNNode()
 
-    override init(){
+    private override init() {
         super.init()
         sceneView.scene.rootNode.addChildNode(faceNode)
         faceNode.addChildNode(eyeMidpointNode)
@@ -43,9 +43,9 @@ class FaceGestureRecognitionSession: NSObject {
         sceneView.session.delegate = self
     }
     
-    private var recognizers: [FaceGestureRecognizer] = []
+    private var recognizers: [FaceGestureRecognizerProtocol] = []
     
-    static func addRecognizer(_ recognizer: FaceGestureRecognizer){
+    static func addRecognizer(_ recognizer: FaceGestureRecognizerProtocol) {
         shared.recognizers.append(recognizer)
     }
     
@@ -55,37 +55,30 @@ class FaceGestureRecognitionSession: NSObject {
 
 extension FaceGestureRecognitionSession: ARSessionDelegate {
     func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
-        let faceAnchors = anchors.compactMap { $0 as? ARFaceAnchor }
-        if faceAnchors.isEmpty {
-            return
-        }
-        let faceAnchor = faceAnchors[0]
+        guard let faceAnchor = anchors.compactMap({ $0 as? ARFaceAnchor }).first else { return }
         
         print("face anchor added")
         
         for recognizer in recognizers {
             DispatchQueue.main.async {
-                // 얼굴이 인식되기 시작했음을 recognizer에 전달합니다.
-                recognizer.onStartDetectingFace()
+                if let handle = recognizer.handleStartOfFaceDetection {
+                    handle()
+                }
             }
         }
     }
     
     func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
-        // 이 부분에서 map후 하나만 추출하는 코드를 더 깔끔하게 바꿀 수 없을까요?
-        // guard let faceAnchor = faceAnchors[0] else 식으로는 작성이 안되서 우선 이렇게 작성했습니다.
-        let faceAnchors = anchors.compactMap { $0 as? ARFaceAnchor }
-        if faceAnchors.isEmpty {
-            return
-        }
-        let faceAnchor = faceAnchors[0]
+        guard let faceAnchor = anchors.compactMap({ $0 as? ARFaceAnchor }).first else { return }
         
         // 현재 양 눈이 감긴 상태(blendShape 값)를 recognizer에 전달합니다.
         if let leftBlinkShape = faceAnchor.blendShapes[.eyeBlinkLeft] as? Double,
             let rightBlinkShape = faceAnchor.blendShapes[.eyeBlinkRight] as? Double {
             for recognizer in recognizers {
                 DispatchQueue.main.async {
-                    recognizer.onEyeBlinkShape(left: leftBlinkShape, right: rightBlinkShape)
+                    if let handle = recognizer.handleEyeBlinkShape {
+                        handle(leftBlinkShape, rightBlinkShape)
+                    }
                 }
             }
         }
@@ -112,7 +105,9 @@ extension FaceGestureRecognitionSession: ARSessionDelegate {
         
         for recognizer in recognizers {
             DispatchQueue.main.async {
-                recognizer.onLookAtPoint(currentPoint)
+                if let handle = recognizer.handleLookPoint {
+                   handle(currentPoint)
+                }
             }
         }
         

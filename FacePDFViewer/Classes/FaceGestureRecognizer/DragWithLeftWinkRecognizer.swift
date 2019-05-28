@@ -23,7 +23,7 @@ class DragWithLeftWinkRecognizer: FaceGestureRecognizer {
     private var endThreshold: Double
     private var recognizing = false
     
-    init?(startThreshold: Double = 0.2, endThreshold: Double = 0.15){
+    init?(startThreshold: Double = 0.2, endThreshold: Double = 0.15) {
         if startThreshold < endThreshold,
             startThreshold < 0 || startThreshold > 1.0,
             endThreshold < 0 || endThreshold > 1.0 {
@@ -36,7 +36,7 @@ class DragWithLeftWinkRecognizer: FaceGestureRecognizer {
         super.init()
     }
     
-    override func onEyeBlinkShape(left: Double, right: Double) {
+    func handleEyeBlinkShape(left: Double, right: Double) {
         if !recognizing && left - right > startThreshold {
             recognizing = true
         }
@@ -48,7 +48,7 @@ class DragWithLeftWinkRecognizer: FaceGestureRecognizer {
     
     var lastPoint: CGPoint?
     
-    override func onLookAtPoint(_ point: CGPoint) {
+    func handleLookPoint(_ point: CGPoint) {
         guard let delegate = delegate,
             recognizing else { return }
         
