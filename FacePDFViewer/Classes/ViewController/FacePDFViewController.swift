@@ -12,7 +12,9 @@ import ARKit
 import SceneKit
 
 class FacePDFViewController: UIViewController {
-    var faceGestureRecognizer: LookPointRecognizer?
+    var lookPointRecognizer = LookPointRecognizer()
+    var dragWithLeftWinkRecognizer = DragWithLeftWinkRecognizer()
+    
     let lookPointDotView = UIView(frame: CGRect(x: 10, y: 10, width: 10, height: 10))
     
     override func viewDidLoad() {
@@ -21,8 +23,8 @@ class FacePDFViewController: UIViewController {
         lookPointDotView.backgroundColor = UIColor.red
         view.addSubview(lookPointDotView)
         
-        faceGestureRecognizer = LookPointRecognizer(targetView: view)
-        faceGestureRecognizer?.delegate = self
+        lookPointRecognizer.delegate = self
+        dragWithLeftWinkRecognizer?.delegate = self
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -41,17 +43,20 @@ class FacePDFViewController: UIViewController {
         pdfView.autoScales = true
         pdfView.document = pdfDocument
     }
-    
-    /*
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let touch = touches.first!
-        print(touch.location(in: view))
-    }
-    */
 }
 
 extension FacePDFViewController: LookPointRecognizerDelegate {
-    func lookAtPoint(_ point: CGPoint) {
+    func lookAt(_ point: CGPoint) {
         lookPointDotView.frame = CGRect(origin: point, size: lookPointDotView.frame.size)
+    }
+}
+
+extension FacePDFViewController: DragWithLeftWinkRecognizerDelegate {
+    func dragOnVector(x: Double, y: Double) {
+        print("Drag on vector: (\(x), \(y))")
+    }
+    
+    func dragOnPoint(_ point: CGPoint) {
+        print("Drag on point: \(point)")
     }
 }

@@ -10,7 +10,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FacePDFViewer/Classes/FaceGestureRecognizer/Extensions.swift"
-            timestampString = "580634798.8110549"
+            timestampString = "580720288.753958"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "83"
@@ -22,17 +22,113 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "FacePDFViewer/Classes/FaceGestureRecognizer/LookPointRecognizer.swift"
-            timestampString = "580635366.100261"
+            filePath = "FacePDFViewer/Classes/FaceGestureRecognizer/FaceGestureRecognizationSession.swift"
+            timestampString = "580718447.8054349"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "69"
+            endingLineNumber = "69"
+            landmarkName = "session(_:didAdd:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "FacePDFViewer/Classes/ViewController/FacePDFViewController.swift"
+            timestampString = "580720288.754057"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "42"
+            endingLineNumber = "42"
+            landmarkName = "viewDidAppear(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "FacePDFViewer/Classes/ViewController/FacePDFViewController.swift"
+            timestampString = "580720288.75412"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "31"
             endingLineNumber = "31"
-            landmarkName = "LookPointRecognizer"
-            landmarkType = "3">
+            landmarkName = "viewDidAppear(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "FacePDFViewer/Classes/FaceGestureRecognizer/FaceGestureRecognizationSession.swift"
+            timestampString = "580718447.805601"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "32"
+            endingLineNumber = "32"
+            landmarkName = "virtualScreenNode"
+            landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "FacePDFViewer/Classes/FaceGestureRecognizer/FaceGestureRecognizationSession.swift"
+            timestampString = "580718447.805662"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "31"
+            endingLineNumber = "31"
+            landmarkName = "virtualScreenNode"
+            landmarkType = "24">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "FacePDFViewer.FaceGestureRecognizationSession.__allocating_init() -&gt; FacePDFViewer.FaceGestureRecognizationSession"
+                  moduleName = "FacePDFViewer"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/cgi/Desktop/FacePDFViewer/FacePDFViewer/FacePDFViewer/Classes/FaceGestureRecognizer/FaceGestureRecognizationSession.swift"
+                  timestampString = "580713285.295321"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0"
+                  offsetFromSymbolStart = "16">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "FacePDFViewer.FaceGestureRecognizationSession.init() -&gt; FacePDFViewer.FaceGestureRecognizationSession"
+                  moduleName = "FacePDFViewer"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/cgi/Desktop/FacePDFViewer/FacePDFViewer/FacePDFViewer/Classes/FaceGestureRecognizer/FaceGestureRecognizationSession.swift"
+                  timestampString = "580713285.30027"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "16"
+                  endingLineNumber = "16"
+                  offsetFromSymbolStart = "28">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
