@@ -9,8 +9,6 @@
 import Foundation
 import UIKit
 
-// 특정 지점을 보는 제스처를 인식하고 그 지점에 대한 동작을 Delegate에서 정의합니다.
-
 protocol LookPointRecognizerDelegate: class {
     func lookAt(_ point: CGPoint)
 }

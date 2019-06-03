@@ -8,8 +8,6 @@
 
 import UIKit
 import PDFKit
-import ARKit
-import SceneKit
 
 class FacePDFViewController: UIViewController {
     var lookPointRecognizer = LookPointRecognizer()
@@ -52,11 +50,26 @@ extension FacePDFViewController: LookPointRecognizerDelegate {
 }
 
 extension FacePDFViewController: DragWithLeftWinkRecognizerDelegate {
+    func dragDidStart() {
+        
+    }
+    
+    func dragDidEnd() {
+        
+    }
+    
     func dragOnVector(x: Double, y: Double) {
-        print("Drag on vector: (\(x), \(y))")
+        //print("Drag on vector: (\(x), \(y))")
+        //print(CGFloat(y))
+        
+        guard let pdfView = view as? PDFView,
+            let currentPage = pdfView.currentDestination?.page,
+            let currentPoint = pdfView.currentDestination?.point else { return }
+        
+        pdfView.go(to: PDFDestination(page: currentPage, at: currentPoint))
     }
     
     func dragOnPoint(_ point: CGPoint) {
-        print("Drag on point: \(point)")
+        //print("Drag on point: \(point)")
     }
 }

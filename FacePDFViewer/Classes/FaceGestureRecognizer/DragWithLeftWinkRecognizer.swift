@@ -9,9 +9,9 @@
 import Foundation
 import UIKit
 
-// 왼눈(실제로는 오른눈이 인식)을 감고 시선을 이동시키는 것을 인식해서 드래그하고 있는 지점과 이동 벡터에 대한 동작을 Delegate에서 정의합니다.
-
 protocol DragWithLeftWinkRecognizerDelegate: class {
+    func dragDidStart()
+    func dragDidEnd()
     func dragOnPoint(_ point: CGPoint)
     func dragOnVector(x: Double, y: Double)
 }
@@ -21,7 +21,7 @@ class DragWithLeftWinkRecognizer: FaceGestureRecognizer {
     
     private var startThreshold: Double
     private var endThreshold: Double
-    private var recognizing = false
+    private var isRecognizing = false
     
     init?(startThreshold: Double = 0.2, endThreshold: Double = 0.15) {
         if startThreshold < endThreshold,
@@ -37,12 +37,20 @@ class DragWithLeftWinkRecognizer: FaceGestureRecognizer {
     }
     
     func handleEyeBlinkShape(left: Double, right: Double) {
-        if !recognizing && left - right > startThreshold {
-            recognizing = true
+        if !isRecognizing && left - right > startThreshold {
+            if let delegate = delegate {
+                delegate.dragDidStart()
+            }
+            
+            isRecognizing = true
         }
-        if recognizing && left - right < endThreshold {
+        if isRecognizing && left - right < endThreshold {
+            if let delegate = delegate {
+                delegate.dragDidEnd()
+            }
+            
             lastPoint = nil
-            recognizing = false
+            isRecognizing = false
         }
     }
     
@@ -50,14 +58,14 @@ class DragWithLeftWinkRecognizer: FaceGestureRecognizer {
     
     func handleLookPoint(_ point: CGPoint) {
         guard let delegate = delegate,
-            recognizing else { return }
+            isRecognizing else { return }
         
         delegate.dragOnPoint(point)
         
         if let lastPoint = lastPoint {
             let xDifference = Double(point.x - lastPoint.x)
             let yDifference = Double(point.y - lastPoint.y)
-            delegate .dragOnVector(x: xDifference, y: yDifference)
+            delegate.dragOnVector(x: xDifference, y: yDifference)
         }
         
         lastPoint = point
