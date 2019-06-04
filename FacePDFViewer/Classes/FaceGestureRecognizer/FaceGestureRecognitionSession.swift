@@ -88,10 +88,4 @@ extension FaceGestureRecognitionSession: ARSessionDelegate {
             }
         }
     }
-    
-    func session(_ session: ARSession, didRemove anchors: [ARAnchor]) {
-        guard let _ = anchors.compactMap({ $0 as? ARFaceAnchor }).first else { return }
-        
-        print("Face removed")
-    }
 }

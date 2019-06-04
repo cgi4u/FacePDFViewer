@@ -9,23 +9,30 @@
 import Foundation
 import UIKit
 
+// MARK: New Codes
+
+//TODO: - delegate 메소드 네이밍
 protocol GazeRecognizerDelegate: class {
-    func startToGazeIn(_ area: CGRect)
-    func endToGazeIn(_ area: CGRect)
-    func didThresholdTimeOver()
+    func startToGazeIn(_ sender: GazeRecognizer)
+    func endToGazeIn(_ sender: GazeRecognizer)
+    func gazeInDuring(_ sender: GazeRecognizer, elapsedTime: TimeInterval)
+    func didThresholdTimeOver(_ sender: GazeRecognizer)
 }
+//MARK: -
 
 class GazeRecognizer: FaceGestureRecognizer {
-    private let area: CGRect
+    let area: CGRect
     private let thresholdTime: TimeInterval
     
     weak var delegate: GazeRecognizerDelegate?
     
-    init(in area: CGRect, during thresholdTime: TimeInterval){
+    init(area: CGRect, thresholdTime: TimeInterval){
         self.area = area
         self.thresholdTime = thresholdTime
         super.init()
     }
+    
+    //TODO: 코드 정리 필요
     
     private var isRecognizing = false
     private var startDate: Date?
@@ -36,17 +43,24 @@ class GazeRecognizer: FaceGestureRecognizer {
         if area.contains(point) {
             if isRecognizing,
                 let startDate = startDate {
-                if Date().timeIntervalSince(startDate) > thresholdTime {
-                    delegate.didThresholdTimeOver()
+                let elapsedTime = Date().timeIntervalSince(startDate)
+                delegate.gazeInDuring(self, elapsedTime: elapsedTime)
+                
+                if elapsedTime > thresholdTime {
+                    delegate.didThresholdTimeOver(self)
                     self.startDate = Date()
                 }
             } else {
                 isRecognizing = true
                 startDate = Date()
+                
+                delegate.startToGazeIn(self)
             }
-        } else {
+        } else if isRecognizing {
             isRecognizing = false
             startDate = nil
+            
+            delegate.endToGazeIn(self)
         }
     }
 }

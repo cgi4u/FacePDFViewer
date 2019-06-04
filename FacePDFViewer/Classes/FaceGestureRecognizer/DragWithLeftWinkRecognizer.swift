@@ -9,12 +9,14 @@
 import Foundation
 import UIKit
 
+//TODO: - delegate 메소드 네이밍, sender 추가 필요
 protocol DragWithLeftWinkRecognizerDelegate: class {
     func startToDrag()
     func endToDrag()
     func dragOnPoint(_ point: CGPoint)
     func dragOnVector(x: Double, y: Double)
 }
+//MARK: -
 
 class DragWithLeftWinkRecognizer: FaceGestureRecognizer {
     weak var delegate: DragWithLeftWinkRecognizerDelegate?
@@ -24,9 +26,9 @@ class DragWithLeftWinkRecognizer: FaceGestureRecognizer {
     private var isRecognizing = false
     
     init?(startThreshold: Double = 0.2, endThreshold: Double = 0.15) {
-        if startThreshold < endThreshold,
-            startThreshold < 0 || startThreshold > 1.0,
-            endThreshold < 0 || endThreshold > 1.0 {
+        if startThreshold < endThreshold
+            || startThreshold < 0 || startThreshold > 1.0
+            || endThreshold < 0 || endThreshold > 1.0 {
             return nil
         }
         
