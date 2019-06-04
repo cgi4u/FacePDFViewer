@@ -84,6 +84,8 @@ extension FacePDFViewController: DragWithLeftWinkRecognizerDelegate {
         scaleLookPointView(0.5)
     }
     
+    // Convert y axis movement of the looking point from view space to page space
+    // and scroll down/up using that.
     func dragOnVector(x: Double, y: Double) {
         guard let currentPage = pdfView.currentPage,
             let pdfDocument = pdfView.document else { return }
@@ -127,6 +129,7 @@ extension FacePDFViewController: GazeRecognizerDelegate {
     func gazeInDuring(_ sender: GazeRecognizer, elapsedTime: TimeInterval) {
     }
     
+    // Move to previous / next page when gazing in top / bottom area detected
     func didThresholdTimeOver(_ sender: GazeRecognizer) {
         guard let currentDocument = pdfView.document,
             let currentPage = pdfView.currentPage else { return }

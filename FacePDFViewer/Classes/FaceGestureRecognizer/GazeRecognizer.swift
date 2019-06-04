@@ -22,6 +22,7 @@ protocol GazeRecognizerDelegate: class {
 
 class GazeRecognizer: FaceGestureRecognizer {
     let area: CGRect
+    // threshold 배열을 받아 정렳 후 시간순으로 단계별 감지?
     private let thresholdTime: TimeInterval
     
     weak var delegate: GazeRecognizerDelegate?
@@ -34,7 +35,16 @@ class GazeRecognizer: FaceGestureRecognizer {
     
     //TODO: 코드 정리 필요
     
-    private var isRecognizing = false
+    //TODO: StartDate를 isRecognizing didSet에서 설정?
+    private var isRecognizing = false {
+        didSet{
+            if isRecognizing {
+                startDate = Date()
+            } else {
+                startDate = nil
+            }
+        }
+    }
     private var startDate: Date?
     
     func handleLookPoint(_ point: CGPoint) {
@@ -52,14 +62,10 @@ class GazeRecognizer: FaceGestureRecognizer {
                 }
             } else {
                 isRecognizing = true
-                startDate = Date()
-                
                 delegate.startToGazeIn(self)
             }
         } else if isRecognizing {
             isRecognizing = false
-            startDate = nil
-            
             delegate.endToGazeIn(self)
         }
     }
