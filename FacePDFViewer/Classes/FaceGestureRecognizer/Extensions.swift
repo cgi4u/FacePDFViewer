@@ -94,7 +94,3 @@ public extension UIDevice {
         }
     }()
 }
-
-public extension PDFView {
-    
-}

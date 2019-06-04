@@ -10,8 +10,8 @@ import Foundation
 import UIKit
 
 protocol DragWithLeftWinkRecognizerDelegate: class {
-    func dragDidStart()
-    func dragDidEnd()
+    func startToDrag()
+    func endToDrag()
     func dragOnPoint(_ point: CGPoint)
     func dragOnVector(x: Double, y: Double)
 }
@@ -39,14 +39,15 @@ class DragWithLeftWinkRecognizer: FaceGestureRecognizer {
     func handleEyeBlinkShape(left: Double, right: Double) {
         if !isRecognizing && left - right > startThreshold {
             if let delegate = delegate {
-                delegate.dragDidStart()
+                delegate.startToDrag()
             }
             
             isRecognizing = true
         }
+        
         if isRecognizing && left - right < endThreshold {
             if let delegate = delegate {
-                delegate.dragDidEnd()
+                delegate.endToDrag()
             }
             
             lastPoint = nil

@@ -48,9 +48,6 @@ class FaceGestureRecognitionSession: NSObject {
     static func addRecognizer(_ recognizer: FaceGestureRecognizerProtocol) {
         shared.recognizers.append(recognizer)
     }
-    
-    //MARK: Test Codes
-    //private var count = 0
 }
 
 extension FaceGestureRecognitionSession: ARSessionDelegate {
@@ -90,14 +87,11 @@ extension FaceGestureRecognitionSession: ARSessionDelegate {
                 handle(currentPoint)
             }
         }
+    }
+    
+    func session(_ session: ARSession, didRemove anchors: [ARAnchor]) {
+        guard let _ = anchors.compactMap({ $0 as? ARFaceAnchor }).first else { return }
         
-        /* // MARK: Test Codes
-        count += 1
-        if count >= 30 {
-            count = 0;
-            print("left: \(faceAnchor.blendShapes[.eyeBlinkLeft]!)")
-            print("right: \(faceAnchor.blendShapes[.eyeBlinkRight]!)")
-        }
-        */
+        print("Face removed")
     }
 }
