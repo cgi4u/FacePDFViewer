@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import PDFKit
 
 public extension UIDevice {
     static let modelName: String = {
@@ -92,4 +93,8 @@ public extension UIDevice {
             return (-1, -1)
         }
     }()
+}
+
+public extension PDFView {
+    
 }

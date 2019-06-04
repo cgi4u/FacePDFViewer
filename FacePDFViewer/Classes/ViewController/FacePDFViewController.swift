@@ -10,6 +10,8 @@ import UIKit
 import PDFKit
 
 class FacePDFViewController: UIViewController {
+    @IBOutlet var pdfView: PDFView!
+    
     var lookPointRecognizer = LookPointRecognizer()
     var dragWithLeftWinkRecognizer = DragWithLeftWinkRecognizer()
     
@@ -28,10 +30,6 @@ class FacePDFViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        guard let pdfView = view as? PDFView else {
-            return;
-        }
-        
         guard let pdfUrl = URL(string: "http://gahp.net/wp-content/uploads/2017/09/sample.pdf"),
             let pdfDocument = PDFDocument(url: pdfUrl) else {
                 return
@@ -41,6 +39,35 @@ class FacePDFViewController: UIViewController {
         pdfView.autoScales = true
         pdfView.document = pdfDocument
     }
+    
+    @IBAction func fff(_ sender: UIButton) {
+        guard let currentPage = pdfView.currentPage,
+            let pdfDocument = pdfView.document else { return }
+        
+        let currentPageIndex = pdfDocument.index(for: currentPage)
+        let currentPageHeight = currentPage.bounds(for: pdfView.displayBox).height
+        
+        var newPoint = pdfView.convert(CGPoint(x: 0, y: -10), to: currentPage)
+        
+        var destinationPage = currentPage
+        if newPoint.y < 0 && currentPageIndex < pdfDocument.pageCount - 1 {
+            guard let nextPage = pdfDocument.page(at: currentPageIndex + 1) else { return }
+            destinationPage = nextPage
+            let nextPageHeight = nextPage.bounds(for: pdfView.displayBox).height
+            newPoint.y = max(nextPageHeight + newPoint.y + pdfView.pageBreakMargins.top + pdfView.pageBreakMargins.bottom, 0)
+        } else if newPoint.y > currentPageHeight && currentPageIndex > 0 {
+            guard let previousPage = pdfDocument.page(at: currentPageIndex - 1) else { return }
+            destinationPage = previousPage
+            let previousPageHeight = previousPage.bounds(for: pdfView.displayBox).height
+            newPoint.y = min(newPoint.y - currentPageHeight - pdfView.pageBreakMargins.top - pdfView.pageBreakMargins.bottom, previousPageHeight)
+        }
+        
+        print(newPoint)
+        pdfView.go(to: PDFDestination(page: destinationPage, at: newPoint))
+    }
+    
+    //MARK: Test Codes
+    var count = 0
 }
 
 extension FacePDFViewController: LookPointRecognizerDelegate {
@@ -59,17 +86,33 @@ extension FacePDFViewController: DragWithLeftWinkRecognizerDelegate {
     }
     
     func dragOnVector(x: Double, y: Double) {
-        //print("Drag on vector: (\(x), \(y))")
-        //print(CGFloat(y))
+        guard let currentPage = pdfView.currentPage,
+            let pdfDocument = pdfView.document else { return }
         
-        guard let pdfView = view as? PDFView,
-            let currentPage = pdfView.currentDestination?.page,
-            let currentPoint = pdfView.currentDestination?.point else { return }
+        let currentPageIndex = pdfDocument.index(for: currentPage)
+        let currentPageHeight = currentPage.bounds(for: pdfView.displayBox).height
         
-        pdfView.go(to: PDFDestination(page: currentPage, at: currentPoint))
+        var newPoint = pdfView.convert(CGPoint(x: 0, y: y), to: currentPage)
+        
+        var destinationPage = currentPage
+        if newPoint.y < 0 && currentPageIndex < pdfDocument.pageCount - 1 {
+            guard let nextPage = pdfDocument.page(at: currentPageIndex + 1) else { return }
+            destinationPage = nextPage
+            let nextPageHeight = nextPage.bounds(for: pdfView.displayBox).height
+            newPoint.y = max(nextPageHeight + newPoint.y + pdfView.pageBreakMargins.top + pdfView.pageBreakMargins.bottom, 0)
+        } else if newPoint.y > currentPageHeight && currentPageIndex > 0 {
+            guard let previousPage = pdfDocument.page(at: currentPageIndex - 1) else { return }
+            destinationPage = previousPage
+            let previousPageHeight = previousPage.bounds(for: pdfView.displayBox).height
+            newPoint.y = min(newPoint.y - currentPageHeight - pdfView.pageBreakMargins.top - pdfView.pageBreakMargins.bottom, previousPageHeight)
+        }
+        
+        print(newPoint)
+        pdfView.go(to: PDFDestination(page: destinationPage, at: newPoint))
     }
     
     func dragOnPoint(_ point: CGPoint) {
         //print("Drag on point: \(point)")
     }
 }
+ 
