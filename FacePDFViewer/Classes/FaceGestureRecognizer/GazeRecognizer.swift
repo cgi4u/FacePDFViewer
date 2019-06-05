@@ -9,20 +9,15 @@
 import Foundation
 import UIKit
 
-// MARK: New Codes
-
-//TODO: - delegate 메소드 네이밍
 protocol GazeRecognizerDelegate: class {
-    func startToGazeIn(_ sender: GazeRecognizer)
-    func endToGazeIn(_ sender: GazeRecognizer)
-    func gazeInDuring(_ sender: GazeRecognizer, elapsedTime: TimeInterval)
-    func didThresholdTimeOver(_ sender: GazeRecognizer)
+    func didStartToGaze(_ recognizer: GazeRecognizer)
+    func didEndToGaze(_ recognizer: GazeRecognizer)
+    func didGazeOverThresholdTime(_ recognizer: GazeRecognizer)
+    func handleGaze(_ recognizer: GazeRecognizer, elapsedTime: TimeInterval)
 }
-//MARK: -
 
 class GazeRecognizer: FaceGestureRecognizer {
-    let area: CGRect
-    // threshold 배열을 받아 정렳 후 시간순으로 단계별 감지?
+    private let area: CGRect
     private let thresholdTime: TimeInterval
     
     weak var delegate: GazeRecognizerDelegate?
@@ -33,14 +28,12 @@ class GazeRecognizer: FaceGestureRecognizer {
         super.init()
     }
     
-    //TODO: 코드 정리 필요
     
-    //TODO: StartDate를 isRecognizing didSet에서 설정?
     private var isRecognizing = false {
         didSet{
-            if isRecognizing {
+            if isRecognizing && !oldValue {
                 startDate = Date()
-            } else {
+            } else if !isRecognizing && oldValue {
                 startDate = nil
             }
         }
@@ -54,19 +47,19 @@ class GazeRecognizer: FaceGestureRecognizer {
             if isRecognizing,
                 let startDate = startDate {
                 let elapsedTime = Date().timeIntervalSince(startDate)
-                delegate.gazeInDuring(self, elapsedTime: elapsedTime)
+                delegate.handleGaze(self, elapsedTime: elapsedTime)
                 
                 if elapsedTime > thresholdTime {
-                    delegate.didThresholdTimeOver(self)
+                    delegate.didGazeOverThresholdTime(self)
                     self.startDate = Date()
                 }
             } else {
                 isRecognizing = true
-                delegate.startToGazeIn(self)
+                delegate.didStartToGaze(self)
             }
         } else if isRecognizing {
             isRecognizing = false
-            delegate.endToGazeIn(self)
+            delegate.didEndToGaze(self)
         }
     }
 }

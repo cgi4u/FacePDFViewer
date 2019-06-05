@@ -15,11 +15,16 @@ class FacePDFViewController: UIViewController {
     
     private let lookPointRecognizer = LookPointRecognizer()
     private let dragWithLeftWinkRecognizer = DragWithLeftWinkRecognizer()
-    private let gazeInBottomAreaRecognizer = GazeRecognizer(area: CGRect(x: 0, y: UIScreen.main.bounds.height - UIScreen.main.bounds.height / 5, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height / 5), thresholdTime: 3)
-    private let gazeInTopAreaRecognizer = GazeRecognizer(area: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height / 5), thresholdTime: 3)
     private let rightWinkRecognizer = RightWinkRecognizer()
+
+    private let gazeInTopAreaRecognizer: GazeRecognizer = GazeRecognizer(area: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height / 5), thresholdTime: 3)
+    private let gazeInBottomAreaRecognizer: GazeRecognizer = GazeRecognizer(area: CGRect(x: 0, y: UIScreen.main.bounds.height - UIScreen.main.bounds.height / 5, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height / 5), thresholdTime: 3)
     
     let lookPointDotView = UIView(frame: CGRect(x: 10, y: 10, width: 10, height: 10))
+    private let lookPointScaleUpFactor: CGFloat = 2
+    
+    private var isScaledUp = false
+    private let viewScaleUpFactor: CGFloat = 2
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,7 +36,7 @@ class FacePDFViewController: UIViewController {
         dragWithLeftWinkRecognizer?.delegate = self
         gazeInTopAreaRecognizer.delegate = self
         gazeInBottomAreaRecognizer.delegate = self
-        rightWinkRecognizer?.numberOfWinksRequired = 2
+        rightWinkRecognizer?.winkCountRequired = 2
         rightWinkRecognizer?.delegate = self
     }
 
@@ -48,22 +53,11 @@ class FacePDFViewController: UIViewController {
         pdfView.document = pdfDocument
     }
     
-    // MARK: - New Codes
-    
     private func scaleLookPointView(_ factor: CGFloat) {
         let lookPointOrigin = lookPointDotView.frame.origin
         let lookPointDoubledSize = CGSize(width: lookPointDotView.frame.size.width * factor , height: lookPointDotView.frame.size.height * factor)
         lookPointDotView.frame = CGRect(origin: lookPointOrigin, size: lookPointDoubledSize)
     }
-    
-    //MARK: - Test Codes
-    
-    @IBAction func button(_ sender: Any) {
-        print(pdfView.scaleFactor)
-        pdfView.scaleFactor = pdfView.scaleFactor * 2
-    }
-
-    //var count = 0
 }
 
 extension FacePDFViewController: LookPointRecognizerDelegate {
@@ -72,82 +66,75 @@ extension FacePDFViewController: LookPointRecognizerDelegate {
     }
 }
 
-// MARK: - New Codes
-// TODO: 코드 정리 필요
-
 extension FacePDFViewController: DragWithLeftWinkRecognizerDelegate {
-    func  startToDrag() {
-        scaleLookPointView(2)
+    // Double the size of dot during dragging
+    func  didStartToDrag() {
+        scaleLookPointView(lookPointScaleUpFactor)
     }
     
-    func endToDrag() {
-        scaleLookPointView(0.5)
+    func didEndToDrag() {
+        scaleLookPointView(1 / lookPointScaleUpFactor)
     }
     
     // Convert y axis movement of the looking point from view space to page space
     // and scroll down/up using that.
-    func dragOnVector(x: Double, y: Double) {
+    func handleDragOnVector(x: Double, y: Double) {
         guard let currentPage = pdfView.currentPage,
             let pdfDocument = pdfView.document else { return }
-        
         let currentPageIndex = pdfDocument.index(for: currentPage)
         let currentPageHeight = currentPage.bounds(for: pdfView.displayBox).height
         
-        var newPoint = pdfView.convert(CGPoint(x: 0, y: y), to: currentPage)
+        var newTopPoint = pdfView.convert(CGPoint(x: 0, y: y), to: currentPage)
         
         var destinationPage = currentPage
         let margin = pdfView.pageBreakMargins.top + pdfView.pageBreakMargins.bottom
-        if newPoint.y < 0 && currentPageIndex < pdfDocument.pageCount - 1 {
+        
+        if newTopPoint.y < 0 && currentPageIndex < pdfDocument.pageCount - 1 {
             guard let nextPage = pdfDocument.page(at: currentPageIndex + 1) else { return }
             destinationPage = nextPage
             let nextPageHeight = nextPage.bounds(for: pdfView.displayBox).height
-            newPoint.y = max(nextPageHeight + newPoint.y + margin, 0)
-        } else if newPoint.y > currentPageHeight && currentPageIndex > 0 {
+            newTopPoint.y = max(nextPageHeight + newTopPoint.y + margin, 0)
+        } else if newTopPoint.y > currentPageHeight && currentPageIndex > 0 {
             guard let previousPage = pdfDocument.page(at: currentPageIndex - 1) else { return }
             destinationPage = previousPage
             let previousPageHeight = previousPage.bounds(for: pdfView.displayBox).height
-            newPoint.y = min(newPoint.y - currentPageHeight - margin, previousPageHeight)
+            newTopPoint.y = min(newTopPoint.y - currentPageHeight - margin, previousPageHeight)
         }
         
-        pdfView.go(to: PDFDestination(page: destinationPage, at: newPoint))
-    }
-    
-    func dragOnPoint(_ point: CGPoint) {
-        
+        pdfView.go(to: PDFDestination(page: destinationPage, at: newTopPoint))
     }
 }
 
 extension FacePDFViewController: GazeRecognizerDelegate {
-    func startToGazeIn(_ sender: GazeRecognizer) {
-        
+    func didStartToGaze(_ recognizer: GazeRecognizer) {
+
     }
     
-    func endToGazeIn(_ sender: GazeRecognizer) {
-        
+    func didEndToGaze(_ recognizer: GazeRecognizer) {
+
     }
     
-    func gazeInDuring(_ sender: GazeRecognizer, elapsedTime: TimeInterval) {
-    }
-    
-    // Move to previous / next page when gazing in top / bottom area detected
-    func didThresholdTimeOver(_ sender: GazeRecognizer) {
+    // Go to top of previous / current / next page depending on the position of current top when threshold time is over.
+    func didGazeOverThresholdTime(_ recognizer: GazeRecognizer) {
         guard let currentDocument = pdfView.document,
             let currentPage = pdfView.currentPage else { return }
         let currentPageHeight = currentPage.bounds(for: pdfView.displayBox).height
         let currentPageIndex = currentDocument.index(for: currentPage)
         let topPoint = pdfView.convert(CGPoint(x: 0, y: 0), to: currentPage)
         
-        if sender === gazeInBottomAreaRecognizer {
+        let allowedMargin: CGFloat = 3
+        
+        if recognizer === gazeInBottomAreaRecognizer {
             if currentPageIndex + 1 >= currentDocument.pageCount
-                || topPoint.y > currentPageHeight {
+                || topPoint.y - allowedMargin >= currentPageHeight {
                 pdfView.go(to: PDFDestination(page: currentPage, at: CGPoint(x: 0, y: currentPageHeight)))
             } else if let nextPage = currentDocument.page(at: currentPageIndex + 1) {
                 let nextPageHeight = nextPage.bounds(for: pdfView.displayBox).height
                 pdfView.go(to: PDFDestination(page: nextPage, at: CGPoint(x: 0, y: nextPageHeight)))
             }
-        } else if sender === gazeInTopAreaRecognizer {
+        } else if recognizer === gazeInTopAreaRecognizer {
             if currentPageIndex - 1 < 0
-                || topPoint.y < currentPageHeight {
+                || topPoint.y + allowedMargin <= currentPageHeight {
                 pdfView.go(to: PDFDestination(page: currentPage, at: CGPoint(x: 0, y: currentPageHeight)))
             } else if let previousPage = currentDocument.page(at: currentPageIndex - 1) {
                 let previousPageHeight = previousPage.bounds(for: pdfView.displayBox).height
@@ -155,15 +142,36 @@ extension FacePDFViewController: GazeRecognizerDelegate {
             }
         }
     }
+    
+    //MARK: - Test Codes
+        
+    func handleGaze(_ recognizer: GazeRecognizer, elapsedTime: TimeInterval) {
+        if recognizer === gazeInTopAreaRecognizer {
+            print("Top gaze elapsed time: \(elapsedTime)")
+        } else if recognizer === gazeInBottomAreaRecognizer {
+            print("Bottom gaze elapsed time: \(elapsedTime)")
+        }
+    }
+        
+    //MARK: -
 }
 
 extension FacePDFViewController: RightWinkRecognizerDelegate {
-    func rightWink() {
-        pdfView.scaleFactor = pdfView.scaleFactor * 1.5
+    //MARK: - Test Codes
+    
+    func handleRightWink() {
+        print("Right wink Detected")
     }
     
-    func rightWinkAt(_ point: CGPoint) {
-        
+    //MARK: -
+    
+    func handleRightWinkCountFulfilled() {
+        if isScaledUp {
+            pdfView.scaleFactor /= viewScaleUpFactor
+        } else {
+            pdfView.scaleFactor *= viewScaleUpFactor
+        }
+        isScaledUp = !isScaledUp
     }
 }
  

@@ -14,20 +14,20 @@ class FaceGestureRecognitionSession: NSObject {
     static let shared = FaceGestureRecognitionSession()
     
     // Not use view itself, only use scene and session attached to it.
-    let sceneView = ARSCNView()
+    private let sceneView = ARSCNView()
     
-    let screenWidth = Float(UIScreen.main.bounds.width)
-    let screenHeight = Float(UIScreen.main.bounds.height)
+    private let screenWidth = Float(UIScreen.main.bounds.width)
+    private let screenHeight = Float(UIScreen.main.bounds.height)
     
     // SceneKit Nodes
-    let faceNode = SCNNode()
-    let virtualPhoneNode = SCNNode()
-    var virtualScreenNode: SCNNode = {
+    private let faceNode = SCNNode()
+    private let virtualPhoneNode = SCNNode()
+    private let virtualScreenNode: SCNNode = {
         let screenGeometry = SCNPlane(width: 1, height: 1)
         screenGeometry.firstMaterial?.diffuse.contents = UIColor.clear
         return SCNNode(geometry: screenGeometry)
     }()
-    let eyeMidpointNode = SCNNode()
+    private let eyeMidpointNode = SCNNode()
 
     private override init() {
         super.init()

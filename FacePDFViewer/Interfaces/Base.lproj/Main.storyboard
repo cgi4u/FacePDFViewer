@@ -18,28 +18,22 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IkT-pB-k7P" userLabel="PDF View" customClass="PDFView">
-                                <rect key="frame" x="0.0" y="44" width="375" height="684"/>
+                            <view userInteractionEnabled="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IkT-pB-k7P" userLabel="PDF View" customClass="PDFView">
+                                <rect key="frame" x="0.0" y="44" width="375" height="734"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" notEnabled="YES"/>
+                                </accessibility>
                                 <gestureRecognizers/>
                             </view>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="s7y-nT-4Na">
-                                <rect key="frame" x="164.66666666666666" y="748" width="46" height="30"/>
-                                <state key="normal" title="Button"/>
-                                <connections>
-                                    <action selector="button:" destination="BYZ-38-t0r" eventType="touchUpInside" id="H6i-v9-UYa"/>
-                                </connections>
-                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <gestureRecognizers/>
                         <constraints>
-                            <constraint firstItem="s7y-nT-4Na" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="3a7-tE-qTe"/>
                             <constraint firstItem="IkT-pB-k7P" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="X43-gk-PLd"/>
-                            <constraint firstItem="s7y-nT-4Na" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="a5a-Jr-vbQ"/>
                             <constraint firstItem="IkT-pB-k7P" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="gVS-hd-p9v"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="IkT-pB-k7P" secondAttribute="trailing" id="hm4-8P-gF4"/>
-                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="IkT-pB-k7P" secondAttribute="bottom" constant="50" id="whh-l2-1d6"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="IkT-pB-k7P" secondAttribute="bottom" id="whh-l2-1d6"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
