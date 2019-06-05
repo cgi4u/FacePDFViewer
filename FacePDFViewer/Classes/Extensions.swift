@@ -17,6 +17,7 @@ public extension UIDevice {
         // UInt값을 유니코드 값으로 변환해서 반환
         let identifier = machineMirror.children.reduce("") { identifier, element in
             guard let value = element.value as? Int8, value != 0 else { return identifier }
+            
             return identifier + String(UnicodeScalar(UInt8(value)))
         }
         

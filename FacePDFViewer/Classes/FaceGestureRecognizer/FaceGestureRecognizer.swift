@@ -7,16 +7,26 @@
 //
 
 import Foundation
-import UIKit
+import UIKit 
 
-@objc protocol FaceGestureRecognizerProtocol {
-    //@objc optional func handleStartOfFaceDetection()
-    @objc optional func handleLookPoint(_ point: CGPoint)
-    @objc optional func handleEyeBlinkShape(left: Double, right: Double)
-}
-
-class FaceGestureRecognizer: FaceGestureRecognizerProtocol {
-    init() {
+class FaceGestureRecognizer {
+    enum SideOfEye {
+        case Left
+        case Right
+    }
+    
+    var isSmoothModeEnabled: Bool
+    
+    init(isSmoothModeEnabled: Bool) {
+        self.isSmoothModeEnabled = isSmoothModeEnabled
         FaceGestureRecognitionSession.addRecognizer(self)
+    }
+    
+    func handleLookPoint(_ point: CGPoint) {
+        
+    }
+    
+    func handleEyeBlinkShape(left: Double, right: Double) {
+        
     }
 }

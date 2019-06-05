@@ -11,7 +11,7 @@
 		E2647A60229BC9A300315C49 /* FaceGestureRecognitionSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2647A5F229BC9A300315C49 /* FaceGestureRecognitionSession.swift */; };
 		E2647A62229BE78300315C49 /* FaceGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2647A61229BE78300315C49 /* FaceGestureRecognizer.swift */; };
 		E267757E2292A54D00FF8C05 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E267757D2292A54D00FF8C05 /* Extensions.swift */; };
-		E2690A9122A64DC700B715F7 /* RightWinkRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2690A9022A64DC700B715F7 /* RightWinkRecognizer.swift */; };
+		E2690A9122A64DC700B715F7 /* WinkRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2690A9022A64DC700B715F7 /* WinkRecognizer.swift */; };
 		E2865827228BCE410097A258 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2865826228BCE410097A258 /* AppDelegate.swift */; };
 		E2865829228BCE410097A258 /* FacePDFViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2865828228BCE410097A258 /* FacePDFViewController.swift */; };
 		E286582C228BCE410097A258 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E286582A228BCE410097A258 /* Main.storyboard */; };
@@ -19,7 +19,7 @@
 		E2865831228BCE420097A258 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E286582F228BCE420097A258 /* LaunchScreen.storyboard */; };
 		E286583C228BCE420097A258 /* FacePDFViewerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E286583B228BCE420097A258 /* FacePDFViewerTests.swift */; };
 		E2865847228BCE420097A258 /* FacePDFViewerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2865846228BCE420097A258 /* FacePDFViewerUITests.swift */; };
-		E28A4A01229CFCE70034AA31 /* DragWithLeftWinkRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28A4A00229CFCE70034AA31 /* DragWithLeftWinkRecognizer.swift */; };
+		E28A4A01229CFCE70034AA31 /* DragWithWinkRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E28A4A00229CFCE70034AA31 /* DragWithWinkRecognizer.swift */; };
 		E2B8EBB02293EA81005B56E9 /* LookPointRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2B8EBAF2293EA81005B56E9 /* LookPointRecognizer.swift */; };
 /* End PBXBuildFile section */
 
@@ -45,7 +45,7 @@
 		E2647A5F229BC9A300315C49 /* FaceGestureRecognitionSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceGestureRecognitionSession.swift; sourceTree = "<group>"; };
 		E2647A61229BE78300315C49 /* FaceGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceGestureRecognizer.swift; sourceTree = "<group>"; };
 		E267757D2292A54D00FF8C05 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
-		E2690A9022A64DC700B715F7 /* RightWinkRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RightWinkRecognizer.swift; sourceTree = "<group>"; };
+		E2690A9022A64DC700B715F7 /* WinkRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WinkRecognizer.swift; sourceTree = "<group>"; };
 		E2865823228BCE410097A258 /* FacePDFViewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FacePDFViewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2865826228BCE410097A258 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E2865828228BCE410097A258 /* FacePDFViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FacePDFViewController.swift; sourceTree = "<group>"; };
@@ -59,7 +59,7 @@
 		E2865842228BCE420097A258 /* FacePDFViewerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FacePDFViewerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2865846228BCE420097A258 /* FacePDFViewerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FacePDFViewerUITests.swift; sourceTree = "<group>"; };
 		E2865848228BCE420097A258 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		E28A4A00229CFCE70034AA31 /* DragWithLeftWinkRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragWithLeftWinkRecognizer.swift; sourceTree = "<group>"; };
+		E28A4A00229CFCE70034AA31 /* DragWithWinkRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragWithWinkRecognizer.swift; sourceTree = "<group>"; };
 		E2B8EBAF2293EA81005B56E9 /* LookPointRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LookPointRecognizer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -88,6 +88,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E26CF2FB22A7C1A9003F533F /* Subclasses */ = {
+			isa = PBXGroup;
+			children = (
+				E28A4A00229CFCE70034AA31 /* DragWithWinkRecognizer.swift */,
+				E23C6DD622A56C7A00920395 /* GazeRecognizer.swift */,
+				E2690A9022A64DC700B715F7 /* WinkRecognizer.swift */,
+				E2B8EBAF2293EA81005B56E9 /* LookPointRecognizer.swift */,
+			);
+			path = Subclasses;
+			sourceTree = "<group>";
+		};
 		E286581A228BCE410097A258 = {
 			isa = PBXGroup;
 			children = (
@@ -148,6 +159,7 @@
 		E2B8EBAB2293EA04005B56E9 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				E267757D2292A54D00FF8C05 /* Extensions.swift */,
 				E2B8EBAA2293E9F4005B56E9 /* ViewController */,
 				E2B8EBAC2293EA11005B56E9 /* FaceGestureRecognizer */,
 			);
@@ -157,11 +169,7 @@
 		E2B8EBAC2293EA11005B56E9 /* FaceGestureRecognizer */ = {
 			isa = PBXGroup;
 			children = (
-				E267757D2292A54D00FF8C05 /* Extensions.swift */,
-				E28A4A00229CFCE70034AA31 /* DragWithLeftWinkRecognizer.swift */,
-				E23C6DD622A56C7A00920395 /* GazeRecognizer.swift */,
-				E2690A9022A64DC700B715F7 /* RightWinkRecognizer.swift */,
-				E2B8EBAF2293EA81005B56E9 /* LookPointRecognizer.swift */,
+				E26CF2FB22A7C1A9003F533F /* Subclasses */,
 				E2647A5F229BC9A300315C49 /* FaceGestureRecognitionSession.swift */,
 				E2647A61229BE78300315C49 /* FaceGestureRecognizer.swift */,
 			);
@@ -321,8 +329,8 @@
 				E2865829228BCE410097A258 /* FacePDFViewController.swift in Sources */,
 				E267757E2292A54D00FF8C05 /* Extensions.swift in Sources */,
 				E2865827228BCE410097A258 /* AppDelegate.swift in Sources */,
-				E2690A9122A64DC700B715F7 /* RightWinkRecognizer.swift in Sources */,
-				E28A4A01229CFCE70034AA31 /* DragWithLeftWinkRecognizer.swift in Sources */,
+				E2690A9122A64DC700B715F7 /* WinkRecognizer.swift in Sources */,
+				E28A4A01229CFCE70034AA31 /* DragWithWinkRecognizer.swift in Sources */,
 				E2647A62229BE78300315C49 /* FaceGestureRecognizer.swift in Sources */,
 				E23C6DD722A56C7A00920395 /* GazeRecognizer.swift in Sources */,
 				E2647A60229BC9A300315C49 /* FaceGestureRecognitionSession.swift in Sources */,

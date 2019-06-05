@@ -22,36 +22,36 @@ class GazeRecognizer: FaceGestureRecognizer {
     
     weak var delegate: GazeRecognizerDelegate?
     
-    init(area: CGRect, thresholdTime: TimeInterval){
+    init(area: CGRect, thresholdTime: TimeInterval, enableSmoothMode:Bool){
         self.area = area
         self.thresholdTime = thresholdTime
-        super.init()
+        super.init(isSmoothModeEnabled: enableSmoothMode)
     }
     
     
     private var isRecognizing = false {
         didSet{
             if isRecognizing && !oldValue {
-                startDate = Date()
+                startTime = CACurrentMediaTime()
             } else if !isRecognizing && oldValue {
-                startDate = nil
+                startTime = nil
             }
         }
     }
-    private var startDate: Date?
+    private var startTime: Double?
     
-    func handleLookPoint(_ point: CGPoint) {
+    override func handleLookPoint(_ point: CGPoint) {
         guard let delegate = delegate else { return }
         
         if area.contains(point) {
-            if isRecognizing,
-                let startDate = startDate {
-                let elapsedTime = Date().timeIntervalSince(startDate)
+            if let startTime = startTime,
+                isRecognizing {
+                let elapsedTime = CACurrentMediaTime() - startTime
                 delegate.handleGaze(self, elapsedTime: elapsedTime)
                 
                 if elapsedTime > thresholdTime {
                     delegate.didGazeOverThresholdTime(self)
-                    self.startDate = Date()
+                    self.startTime = CACurrentMediaTime()
                 }
             } else {
                 isRecognizing = true

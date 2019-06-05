@@ -9,20 +9,21 @@
 import Foundation
 import UIKit
 
-protocol DragWithLeftWinkRecognizerDelegate: class {
+protocol DragWithWinkRecognizerDelegate: class {
     func didStartToDrag()
     func didEndToDrag()
     //func handleDragOnPoint(_ point: CGPoint)
     func handleDragOnVector(x: Double, y: Double)
 }
 
-class DragWithLeftWinkRecognizer: FaceGestureRecognizer {
-    weak var delegate: DragWithLeftWinkRecognizerDelegate?
+class DragWithWinkRecognizer: FaceGestureRecognizer {
+    weak var delegate: DragWithWinkRecognizerDelegate?
     
     private var startDifference: Double
     private var endDifference: Double
+    private var side: SideOfEye
    
-    init?(startThreshold: Double = 0.2, endThreshold: Double = 0.15) {
+    init?(startThreshold: Double = 0.2, endThreshold: Double = 0.15, side: SideOfEye, enableSmoothMode: Bool) {
         if startThreshold < endThreshold
             || startThreshold < 0 || startThreshold > 1.0
             || endThreshold < 0 || endThreshold > 1.0 {
@@ -31,14 +32,24 @@ class DragWithLeftWinkRecognizer: FaceGestureRecognizer {
         
         self.startDifference = startThreshold
         self.endDifference = endThreshold
+        self.side = side
         
-        super.init()
+        super.init(isSmoothModeEnabled: enableSmoothMode)
     }
     
     private var isRecognizing = false
     
-    func handleEyeBlinkShape(left: Double, right: Double) {
-        if !isRecognizing && left - right > startDifference {
+    override func handleEyeBlinkShape(left: Double, right: Double) {
+        let shapeDifference: Double = {
+            switch side {
+            case .Left:
+                return left - right
+            case .Right:
+                return right - left
+            }
+        }()
+        
+        if !isRecognizing && shapeDifference > startDifference {
             if let delegate = delegate {
                 delegate.didStartToDrag()
             }
@@ -46,7 +57,7 @@ class DragWithLeftWinkRecognizer: FaceGestureRecognizer {
             isRecognizing = true
         }
         
-        if isRecognizing && left - right < endDifference {
+        if isRecognizing && shapeDifference < endDifference {
             if let delegate = delegate {
                 delegate.didEndToDrag()
             }
@@ -58,7 +69,7 @@ class DragWithLeftWinkRecognizer: FaceGestureRecognizer {
     
     var lastPoint: CGPoint?
     
-    func handleLookPoint(_ point: CGPoint) {
+    override func handleLookPoint(_ point: CGPoint) {
         guard let delegate = delegate,
             isRecognizing else { return }
         

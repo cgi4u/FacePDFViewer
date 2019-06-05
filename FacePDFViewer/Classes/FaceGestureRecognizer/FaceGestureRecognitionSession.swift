@@ -28,6 +28,11 @@ class FaceGestureRecognitionSession: NSObject {
         return SCNNode(geometry: screenGeometry)
     }()
     private let eyeMidpointNode = SCNNode()
+    
+    // For calculate average points
+    var lastPoints:[simd_double2] = []
+    let numberOfPointsToSave = 10
+    var totalPoint = simd_double2(0, 0)
 
     private override init() {
         super.init()
@@ -40,12 +45,11 @@ class FaceGestureRecognitionSession: NSObject {
         sceneView.session.delegateQueue = DispatchQueue.main
         sceneView.session.delegate = self
         sceneView.session.run(ARFaceTrackingConfiguration())
-        
     }
     
-    private var recognizers: [FaceGestureRecognizerProtocol] = []
+    private var recognizers: [FaceGestureRecognizer] = []
     
-    static func addRecognizer(_ recognizer: FaceGestureRecognizerProtocol) {
+    static func addRecognizer(_ recognizer: FaceGestureRecognizer) {
         shared.recognizers.append(recognizer)
     }
 }
@@ -57,9 +61,7 @@ extension FaceGestureRecognitionSession: ARSessionDelegate {
         if let leftBlinkShape = faceAnchor.blendShapes[.eyeBlinkLeft] as? Double,
             let rightBlinkShape = faceAnchor.blendShapes[.eyeBlinkRight] as? Double {
             for recognizer in recognizers {
-                if let handle = recognizer.handleEyeBlinkShape {
-                    handle(leftBlinkShape, rightBlinkShape)
-                }
+                recognizer.handleEyeBlinkShape(left: leftBlinkShape, right: rightBlinkShape)
             }
         }
         
@@ -78,13 +80,25 @@ extension FaceGestureRecognitionSession: ARSessionDelegate {
             return
         }
         
-        let xPoint = screenWidth / 2 + hitTestLookPoint[0].localCoordinates.x * screenWidth / UIDevice.modelMeterSize.0
-        let yPoint = -hitTestLookPoint[0].localCoordinates.y * screenHeight / UIDevice.modelMeterSize.1
-        let currentPoint = CGPoint(x: Double(xPoint), y: Double(yPoint))
+        let xPoint = Double(screenWidth / 2 + hitTestLookPoint[0].localCoordinates.x * screenWidth / UIDevice.modelMeterSize.0)
+        let yPoint = Double(-hitTestLookPoint[0].localCoordinates.y * screenHeight / UIDevice.modelMeterSize.1)
+        let currentPoint = CGPoint(x: xPoint, y: yPoint)
+        
+        if lastPoints.count == numberOfPointsToSave {
+            totalPoint -= lastPoints[0]
+            lastPoints.remove(at: 0)
+        }
+        
+        lastPoints.append(simd_double2(xPoint, yPoint))
+        totalPoint += lastPoints[lastPoints.count - 1]
+        
+        let smoothedPoint = CGPoint(x: totalPoint.x / Double(lastPoints.count), y: totalPoint.y / Double(lastPoints.count))
         
         for recognizer in recognizers {
-            if let handle = recognizer.handleLookPoint {
-                handle(currentPoint)
+            if recognizer.isSmoothModeEnabled {
+                recognizer.handleLookPoint(smoothedPoint)
+            } else {
+                recognizer.handleLookPoint(currentPoint)
             }
         }
     }

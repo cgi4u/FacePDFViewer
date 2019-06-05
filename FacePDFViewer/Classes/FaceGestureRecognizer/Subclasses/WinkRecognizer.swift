@@ -9,20 +9,21 @@
 import Foundation
 import UIKit
 
-protocol RightWinkRecognizerDelegate: class {
-    func handleRightWink()
-    func handleRightWinkCountFulfilled()
+protocol WinkRecognizerDelegate: class {
+    func handleWink()
+    func handleWinkCountFulfilled()
 }
 
-class RightWinkRecognizer: FaceGestureRecognizer {
+class WinkRecognizer: FaceGestureRecognizer {
     private let startShapeDifference: Double
     private let endShapeDifference: Double
+    private let side: SideOfEye
     private let thresholdTime: TimeInterval
     var winkCountRequired = 1
     
-    weak var delegate: RightWinkRecognizerDelegate?
+    weak var delegate: WinkRecognizerDelegate?
     
-    init?(startShapeDifference: Double = 0.2, endShapeDifference:Double = 0.15, thresholdTime: TimeInterval = 0.5) {
+    init?(startShapeDifference: Double = 0.2, endShapeDifference:Double = 0.15, thresholdTime: TimeInterval = 0.5, side: SideOfEye, enableSmoothMode: Bool) {
         if startShapeDifference <= endShapeDifference
             || startShapeDifference < 0 || startShapeDifference > 1.0
             || endShapeDifference < 0 || endShapeDifference > 1.0 {
@@ -31,20 +32,27 @@ class RightWinkRecognizer: FaceGestureRecognizer {
         
         self.startShapeDifference = startShapeDifference
         self.endShapeDifference = endShapeDifference
+        self.side = side
         self.thresholdTime = thresholdTime
-        super.init()
+        
+        super.init(isSmoothModeEnabled: enableSmoothMode)
     }
-
-    //TODO: 코드 정리 필요
     
     private var winkCount = 0
     private var isRecognizing = false
     private var multipleWinkRecognizationTimer: Timer?
     
-    func handleEyeBlinkShape(left: Double, right: Double) {
+    override func handleEyeBlinkShape(left: Double, right: Double) {
         guard let delegate = delegate else { return }
         
-        let shapeDifference = right - left
+        let shapeDifference: Double = {
+            switch side {
+            case .Left:
+                return left - right
+            case .Right:
+                return right - left
+            }
+        }()
         
         // Start recognizing one wink
         if shapeDifference >= startShapeDifference,
@@ -56,11 +64,11 @@ class RightWinkRecognizer: FaceGestureRecognizer {
         if shapeDifference < endShapeDifference,
             isRecognizing {
             winkCount += 1
-            delegate.handleRightWink()
+            delegate.handleWink()
             
             // When required wink count is fulfilled
             if winkCount == winkCountRequired {
-                delegate.handleRightWinkCountFulfilled()
+                delegate.handleWinkCountFulfilled()
                 
                 if let recognizingTimer = multipleWinkRecognizationTimer,
                     recognizingTimer.isValid {
@@ -68,8 +76,8 @@ class RightWinkRecognizer: FaceGestureRecognizer {
                 }
                 winkCount = 0
             } else if winkCount == 1 {
-                multipleWinkRecognizationTimer = Timer.scheduledTimer(withTimeInterval: thresholdTime, repeats: false) { (timer) in
-                    self.winkCount = 0
+                multipleWinkRecognizationTimer = Timer.scheduledTimer(withTimeInterval: thresholdTime, repeats: false) { [weak self] (_) in
+                    self?.winkCount = 0
                 }
             }
             
