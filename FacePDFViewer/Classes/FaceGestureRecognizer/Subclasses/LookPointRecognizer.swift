@@ -21,4 +21,11 @@ class LookPointRecognizer: FaceGestureRecognizer {
         
         delegate.handleLookPoint(point)
     }
+    
+    override func handleFaceGestureData(_ data: FaceGestureData) {
+        guard let delegate = delegate,
+            let point = usesSmoothedPoint ? data.smoothedLookPoint : data.lookPoint else { return }
+        
+        delegate.handleLookPoint(point)
+    }
 }

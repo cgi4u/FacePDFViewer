@@ -9,38 +9,58 @@
 import Foundation
 import ARKit
 
+//TODO: 데이터 handle 메소드 설계방법 검토
+struct FaceGestureData {
+    let lookPoint: CGPoint?
+    let smoothedLookPoint: CGPoint?
+    let leftEyeBlinkShape: Double?
+    let rightEyeBlinkShape: Double?
+    
+    func eyeBlinkShapeDifferenece(for side: SideOfEye) -> Double? {
+        guard let left = leftEyeBlinkShape,
+            let right = rightEyeBlinkShape else { return nil }
+        
+        switch side {
+        case .Left:
+            return left - right
+        case .Right:
+            return right - left
+        }
+    }
+}
+
 // The singleton instance observed by all recognizers.
 class FaceGestureRecognitionSession: NSObject {
     static let shared = FaceGestureRecognitionSession()
     
     // Not use view itself, only use scene and session attached to it.
-    private let sceneView = ARSCNView()
+    let sceneView = ARSCNView()
     
     private let screenWidth = Float(UIScreen.main.bounds.width)
     private let screenHeight = Float(UIScreen.main.bounds.height)
     
     // SceneKit Nodes
     private let faceNode = SCNNode()
-    private let virtualPhoneNode = SCNNode()
+    //private let virtualPhoneNode = SCNNode()
     private let virtualScreenNode: SCNNode = {
         let screenGeometry = SCNPlane(width: 1, height: 1)
         screenGeometry.firstMaterial?.diffuse.contents = UIColor.clear
         return SCNNode(geometry: screenGeometry)
     }()
-    private let eyeMidpointNode = SCNNode()
+    //private let eyeMidpointNode = SCNNode()
     
     // For calculate average points
-    var lastPoints:[simd_double2] = []
-    let numberOfPointsToSave = 10
-    var totalPoint = simd_double2(0, 0)
+    private var lastPoints:[simd_double2] = []
+    private let maxNumberOfSavedPoints = 10
+    private var totalPoint = simd_double2(0, 0)
 
     private override init() {
         super.init()
         
         sceneView.scene.rootNode.addChildNode(faceNode)
-        faceNode.addChildNode(eyeMidpointNode)
-        virtualPhoneNode.addChildNode(virtualScreenNode)
-        sceneView.pointOfView?.addChildNode(virtualPhoneNode)
+        //faceNode.addChildNode(eyeMidpointNode)
+        //virtualPhoneNode.addChildNode(virtualScreenNode)
+        sceneView.pointOfView?.addChildNode(virtualScreenNode)
         
         sceneView.session.delegateQueue = DispatchQueue.main
         sceneView.session.delegate = self
@@ -52,54 +72,66 @@ class FaceGestureRecognitionSession: NSObject {
     static func addRecognizer(_ recognizer: FaceGestureRecognizer) {
         shared.recognizers.append(recognizer)
     }
+    
+    static func removeRecognizer(_ recognizer: FaceGestureRecognizer) {
+        shared.recognizers = shared.recognizers.filter { $0 !== recognizer }
+    }
 }
 
 extension FaceGestureRecognitionSession: ARSessionDelegate {
     func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
         guard let faceAnchor = anchors.compactMap({ $0 as? ARFaceAnchor }).first else { return }
         
-        if let leftBlinkShape = faceAnchor.blendShapes[.eyeBlinkLeft] as? Double,
-            let rightBlinkShape = faceAnchor.blendShapes[.eyeBlinkRight] as? Double {
-            for recognizer in recognizers {
-                recognizer.handleEyeBlinkShape(left: leftBlinkShape, right: rightBlinkShape)
-            }
-        }
         
         faceNode.simdTransform = faceAnchor.transform
         
-        let midpointPosition = (faceAnchor.leftEyeTransform[3] + faceAnchor.rightEyeTransform[3]) / 2
-        eyeMidpointNode.simdPosition = simd_float3(midpointPosition.x, midpointPosition.y, midpointPosition.z)
+        let simdEyesMidpointPosition = (faceAnchor.leftEyeTransform[3] + faceAnchor.rightEyeTransform[3]) / 2
+        let eyesMidpointPosition = SCNVector3(simdEyesMidpointPosition.x, simdEyesMidpointPosition.y, simdEyesMidpointPosition.z)
+        
+        // Get the point that user is looking at on the device screen
+        var lookPoint: CGPoint?
+        var smoothedLookPoint: CGPoint?
         
         let hitTestOptions : [String: Any] = [SCNHitTestOption.backFaceCulling.rawValue: false,
                                        SCNHitTestOption.searchMode.rawValue: 1,
                                        SCNHitTestOption.ignoreChildNodes.rawValue : false]
         
-        let hitTestLookPoint = virtualPhoneNode.hitTestWithSegment(from: virtualPhoneNode.convertPosition(eyeMidpointNode.worldPosition, from:nil), to: virtualPhoneNode.convertPosition(SCNVector3(faceAnchor.lookAtPoint), from: faceNode), options: hitTestOptions)
+        let hitResults = virtualScreenNode.hitTestWithSegment(from: virtualScreenNode.convertPosition(eyesMidpointPosition, from:faceNode), to: virtualScreenNode.convertPosition(SCNVector3(faceAnchor.lookAtPoint), from: faceNode), options: hitTestOptions)
         
-        if hitTestLookPoint.isEmpty {
-            return
+        if let hit = hitResults.first {
+            let xPoint = Double(screenWidth / 2 + hit.localCoordinates.x * screenWidth / UIDevice.modelMeterSize.0)
+            let yPoint = Double(-hit.localCoordinates.y * screenHeight / UIDevice.modelMeterSize.1)
+            lookPoint = CGPoint(x: xPoint, y: yPoint)
+            
+            if lastPoints.count == maxNumberOfSavedPoints {
+                totalPoint -= lastPoints[0]
+                lastPoints.remove(at: 0)
+            }
+            
+            // Apply smoothing to the current looking point.
+            lastPoints.append(simd_double2(xPoint, yPoint))
+            totalPoint += lastPoints[lastPoints.count - 1]
+            
+            smoothedLookPoint = CGPoint(x: totalPoint.x / Double(lastPoints.count), y: totalPoint.y / Double(lastPoints.count))
         }
         
-        let xPoint = Double(screenWidth / 2 + hitTestLookPoint[0].localCoordinates.x * screenWidth / UIDevice.modelMeterSize.0)
-        let yPoint = Double(-hitTestLookPoint[0].localCoordinates.y * screenHeight / UIDevice.modelMeterSize.1)
-        let currentPoint = CGPoint(x: xPoint, y: yPoint)
-        
-        if lastPoints.count == numberOfPointsToSave {
-            totalPoint -= lastPoints[0]
-            lastPoints.remove(at: 0)
-        }
-        
-        lastPoints.append(simd_double2(xPoint, yPoint))
-        totalPoint += lastPoints[lastPoints.count - 1]
-        
-        let smoothedPoint = CGPoint(x: totalPoint.x / Double(lastPoints.count), y: totalPoint.y / Double(lastPoints.count))
+        let leftEyeBlinkShape = faceAnchor.blendShapes[.eyeBlinkLeft] as? Double
+        let rightEyeBlinkShape = faceAnchor.blendShapes[.eyeBlinkRight] as? Double
+  
+        let faceGestureData = FaceGestureData(lookPoint: lookPoint, smoothedLookPoint: smoothedLookPoint, leftEyeBlinkShape: leftEyeBlinkShape, rightEyeBlinkShape: rightEyeBlinkShape)
         
         for recognizer in recognizers {
-            if recognizer.isSmoothModeEnabled {
-                recognizer.handleLookPoint(smoothedPoint)
-            } else {
-                recognizer.handleLookPoint(currentPoint)
+            if let lookPoint = lookPoint,
+                let smoothedLookPoint = smoothedLookPoint {
+                recognizer.handleLookPoint(recognizer.usesSmoothedPoint ? smoothedLookPoint : lookPoint)
             }
+            
+            if let leftBlinkShape = faceAnchor.blendShapes[.eyeBlinkLeft] as? Double,
+                let rightBlinkShape = faceAnchor.blendShapes[.eyeBlinkRight] as? Double {
+                recognizer.handleEyeBlinkShape(left: leftBlinkShape, right: rightBlinkShape)
+            }
+            
+            recognizer.handleFaceGestureData(faceGestureData)
         }
     }
 }

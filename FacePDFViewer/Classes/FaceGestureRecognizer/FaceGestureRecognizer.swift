@@ -7,19 +7,22 @@
 //
 
 import Foundation
-import UIKit 
+import UIKit
+
+enum SideOfEye {
+    case Left
+    case Right
+}
 
 class FaceGestureRecognizer {
-    enum SideOfEye {
-        case Left
-        case Right
+    var usesSmoothedPoint = true
+    
+    init() {
+        FaceGestureRecognitionSession.addRecognizer(self)
     }
     
-    var isSmoothModeEnabled: Bool
-    
-    init(isSmoothModeEnabled: Bool) {
-        self.isSmoothModeEnabled = isSmoothModeEnabled
-        FaceGestureRecognitionSession.addRecognizer(self)
+    deinit {
+        FaceGestureRecognitionSession.removeRecognizer(self)
     }
     
     func handleLookPoint(_ point: CGPoint) {
@@ -29,4 +32,11 @@ class FaceGestureRecognizer {
     func handleEyeBlinkShape(left: Double, right: Double) {
         
     }
+    
+    //TODO: 데이터 handle 메소드 설계방법 검토
+    func handleFaceGestureData(_ data: FaceGestureData) {
+    
+    }
+    
+    
 }

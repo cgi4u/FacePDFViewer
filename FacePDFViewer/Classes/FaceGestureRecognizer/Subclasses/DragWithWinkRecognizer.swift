@@ -13,33 +13,35 @@ protocol DragWithWinkRecognizerDelegate: class {
     func didStartToDrag()
     func didEndToDrag()
     //func handleDragOnPoint(_ point: CGPoint)
-    func handleDragOnVector(x: Double, y: Double)
+    func handleDragOnVector(x: CGFloat, y: CGFloat)
 }
 
 class DragWithWinkRecognizer: FaceGestureRecognizer {
     weak var delegate: DragWithWinkRecognizerDelegate?
     
-    private var startDifference: Double
-    private var endDifference: Double
+    private var startShapeDifference: Double
+    private var endShapeDifference: Double
     private var side: SideOfEye
    
-    init?(startThreshold: Double = 0.2, endThreshold: Double = 0.15, side: SideOfEye, enableSmoothMode: Bool) {
+    init?(startThreshold: Double = 0.2, endThreshold: Double = 0.15, side: SideOfEye) {
         if startThreshold < endThreshold
             || startThreshold < 0 || startThreshold > 1.0
             || endThreshold < 0 || endThreshold > 1.0 {
             return nil
         }
         
-        self.startDifference = startThreshold
-        self.endDifference = endThreshold
+        self.startShapeDifference = startThreshold
+        self.endShapeDifference = endThreshold
         self.side = side
         
-        super.init(isSmoothModeEnabled: enableSmoothMode)
+        super.init()
     }
     
     private var isRecognizing = false
     
     override func handleEyeBlinkShape(left: Double, right: Double) {
+        guard let delegate = delegate else { return }
+        
         let shapeDifference: Double = {
             switch side {
             case .Left:
@@ -49,19 +51,13 @@ class DragWithWinkRecognizer: FaceGestureRecognizer {
             }
         }()
         
-        if !isRecognizing && shapeDifference > startDifference {
-            if let delegate = delegate {
-                delegate.didStartToDrag()
-            }
-            
+        if !isRecognizing && shapeDifference > startShapeDifference {
+            delegate.didStartToDrag()
             isRecognizing = true
         }
         
-        if isRecognizing && shapeDifference < endDifference {
-            if let delegate = delegate {
-                delegate.didEndToDrag()
-            }
-            
+        if isRecognizing && shapeDifference < endShapeDifference {
+            delegate.didEndToDrag()
             lastPoint = nil
             isRecognizing = false
         }
@@ -76,11 +72,35 @@ class DragWithWinkRecognizer: FaceGestureRecognizer {
         //delegate.handleDragOnPoint(point)
         
         if let lastPoint = lastPoint {
-            let xDifference = Double(point.x - lastPoint.x)
-            let yDifference = Double(point.y - lastPoint.y)
-            delegate.handleDragOnVector(x: xDifference, y: yDifference)
+            delegate.handleDragOnVector(x: point.x - lastPoint.x, y: point.y - lastPoint.y)
         }
         
         lastPoint = point
+    }
+    
+    override func handleFaceGestureData(_ data: FaceGestureData) {
+        guard let delegate = delegate else { return }
+        
+        let point = usesSmoothedPoint ? data.smoothedLookPoint : data.lookPoint
+        
+        if let lastPoint = lastPoint,
+            let point = point,
+            isRecognizing {
+            delegate.handleDragOnVector(x: point.x - lastPoint.x, y: point.y - lastPoint.y)
+        }
+        
+        lastPoint = point
+        
+        guard let shapeDifference = data.eyeBlinkShapeDifferenece(for: side) else { return }
+        
+        if !isRecognizing && shapeDifference > startShapeDifference {
+            delegate.didStartToDrag()
+            isRecognizing = true
+        }
+        
+        if isRecognizing && shapeDifference < endShapeDifference {
+            delegate.didEndToDrag()
+            isRecognizing = false
+        }
     }
 }

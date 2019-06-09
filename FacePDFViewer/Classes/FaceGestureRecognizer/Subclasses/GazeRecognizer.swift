@@ -17,15 +17,15 @@ protocol GazeRecognizerDelegate: class {
 }
 
 class GazeRecognizer: FaceGestureRecognizer {
+    weak var delegate: GazeRecognizerDelegate?
+    
     private let area: CGRect
     private let thresholdTime: TimeInterval
     
-    weak var delegate: GazeRecognizerDelegate?
-    
-    init(area: CGRect, thresholdTime: TimeInterval, enableSmoothMode:Bool){
+    init(area: CGRect, thresholdTime: TimeInterval){
         self.area = area
         self.thresholdTime = thresholdTime
-        super.init(isSmoothModeEnabled: enableSmoothMode)
+        super.init()
     }
     
     
@@ -44,6 +44,30 @@ class GazeRecognizer: FaceGestureRecognizer {
         guard let delegate = delegate else { return }
         
         if area.contains(point) {
+            if let startTime = startTime,
+                isRecognizing {
+                let elapsedTime = CACurrentMediaTime() - startTime
+                delegate.handleGaze(self, elapsedTime: elapsedTime)
+                
+                if elapsedTime > thresholdTime {
+                    delegate.didGazeOverThresholdTime(self)
+                    self.startTime = CACurrentMediaTime()
+                }
+            } else {
+                isRecognizing = true
+                delegate.didStartToGaze(self)
+            }
+        } else if isRecognizing {
+            isRecognizing = false
+            delegate.didEndToGaze(self)
+        }
+    }
+    
+    override func handleFaceGestureData(_ data: FaceGestureData) {
+        guard let delegate = delegate else { return }
+        
+        if let point = usesSmoothedPoint ? data.smoothedLookPoint : data.lookPoint,
+            area.contains(point) {
             if let startTime = startTime,
                 isRecognizing {
                 let elapsedTime = CACurrentMediaTime() - startTime

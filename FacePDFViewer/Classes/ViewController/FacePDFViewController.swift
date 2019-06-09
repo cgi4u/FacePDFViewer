@@ -8,17 +8,19 @@
 
 import UIKit
 import PDFKit
-import ARKit
 
 class FacePDFViewController: UIViewController {
     @IBOutlet var pdfView: PDFView!
     
-    private let lookPointRecognizer = LookPointRecognizer(isSmoothModeEnabled: true)
-    private let dragWithLeftWinkRecognizer = DragWithWinkRecognizer(side: .Left, enableSmoothMode: true)
-    private let rightWinkRecognizer = WinkRecognizer(side: .Right, enableSmoothMode: true)
+    private let lookPointRecognizer = LookPointRecognizer()
+    private let dragWithLeftWinkRecognizer = DragWithWinkRecognizer(side: .Left)
+    private let rightWinkRecognizer = WinkRecognizer(side: .Right)
 
-    private let gazeInTopAreaRecognizer = GazeRecognizer(area: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height / 5), thresholdTime: 3, enableSmoothMode: true)
-    private let gazeInBottomAreaRecognizer = GazeRecognizer(area: CGRect(x: 0, y: UIScreen.main.bounds.height - UIScreen.main.bounds.height / 5, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height / 5), thresholdTime: 3, enableSmoothMode: true)
+    private let topGazeArea: CGRect
+    private let bottomGazeArea: CGRect
+    private let gazeThresholdTime: TimeInterval
+    private let gazeInTopAreaRecognizer: GazeRecognizer
+    private let gazeInBottomAreaRecognizer: GazeRecognizer
     
     private let lookPointDotView = UIView(frame: CGRect(x: 10, y: 10, width: 10, height: 10))
     private let lookPointScaleUpFactor: CGFloat = 2
@@ -26,11 +28,27 @@ class FacePDFViewController: UIViewController {
     private var isScaledUp = false
     private let viewScaleUpFactor: CGFloat = 2
     
+    required init?(coder aDecoder: NSCoder) {
+        topGazeArea = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height / 5)
+        bottomGazeArea = CGRect(x: 0, y: UIScreen.main.bounds.height - UIScreen.main.bounds.height / 5, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height / 5)
+        gazeThresholdTime = 3
+        
+        gazeInTopAreaRecognizer = GazeRecognizer(area: topGazeArea, thresholdTime: gazeThresholdTime)
+        gazeInBottomAreaRecognizer = GazeRecognizer(area: bottomGazeArea, thresholdTime: gazeThresholdTime)
+        
+        super.init(coder: aDecoder)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         lookPointDotView.backgroundColor = UIColor.red
         view.addSubview(lookPointDotView)
+
+        let arSceneView = FaceGestureRecognitionSession.shared.sceneView
+        arSceneView.frame = view.frame
+        arSceneView.alpha = 0.5
+        view.addSubview(arSceneView)
         
         lookPointRecognizer.delegate = self
         dragWithLeftWinkRecognizer?.delegate = self
@@ -78,7 +96,7 @@ extension FacePDFViewController: DragWithWinkRecognizerDelegate {
     
     // Convert y axis movement of the looking point from view space to page space
     // and scroll down/up using that.
-    func handleDragOnVector(x: Double, y: Double) {
+    func handleDragOnVector(x: CGFloat, y: CGFloat) {
         guard let currentPage = pdfView.currentPage,
             let pdfDocument = pdfView.document else { return }
         
