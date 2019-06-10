@@ -31,37 +31,19 @@ class GazeRecognizer: FaceGestureRecognizer {
     
     private var isRecognizing = false {
         didSet{
+            guard let delegate = delegate else { return }
+            
             if isRecognizing && !oldValue {
                 startTime = CACurrentMediaTime()
+                delegate.didStartToGaze(self)
             } else if !isRecognizing && oldValue {
                 startTime = nil
+                delegate.didEndToGaze(self)
             }
         }
     }
-    private var startTime: Double?
     
-    override func handleLookPoint(_ point: CGPoint) {
-        guard let delegate = delegate else { return }
-        
-        if area.contains(point) {
-            if let startTime = startTime,
-                isRecognizing {
-                let elapsedTime = CACurrentMediaTime() - startTime
-                delegate.handleGaze(self, elapsedTime: elapsedTime)
-                
-                if elapsedTime > thresholdTime {
-                    delegate.didGazeOverThresholdTime(self)
-                    self.startTime = CACurrentMediaTime()
-                }
-            } else {
-                isRecognizing = true
-                delegate.didStartToGaze(self)
-            }
-        } else if isRecognizing {
-            isRecognizing = false
-            delegate.didEndToGaze(self)
-        }
-    }
+    private var startTime: Double?
     
     override func handleFaceGestureData(_ data: FaceGestureData) {
         guard let delegate = delegate else { return }
@@ -79,11 +61,9 @@ class GazeRecognizer: FaceGestureRecognizer {
                 }
             } else {
                 isRecognizing = true
-                delegate.didStartToGaze(self)
             }
         } else if isRecognizing {
             isRecognizing = false
-            delegate.didEndToGaze(self)
         }
     }
 }

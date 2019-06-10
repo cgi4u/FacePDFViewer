@@ -95,3 +95,40 @@ public extension UIDevice {
         }
     }()
 }
+
+extension PDFView {
+    func scroll(to pointInViewSpace: CGPoint) {
+        guard let currentPage = currentPage,
+            let document = document else { return }
+        
+        let currentPageIndex = document.index(for: currentPage)
+        let currentPageHeight = currentPage.bounds(for: displayBox).height
+        let margin = pageBreakMargins.top + pageBreakMargins.bottom
+        
+        var newTopPoint = convert(pointInViewSpace, to: currentPage)
+        var destinationPage = currentPage
+        
+        if newTopPoint.y < 0 && currentPageIndex < document.pageCount - 1 {
+            guard let nextPage = document.page(at: currentPageIndex + 1) else { return }
+            
+            destinationPage = nextPage
+            let nextPageHeight = nextPage.bounds(for: displayBox).height
+            newTopPoint.y = max(nextPageHeight + newTopPoint.y + margin, 0)
+        } else if newTopPoint.y > currentPageHeight && currentPageIndex > 0 {
+            guard let previousPage = document.page(at: currentPageIndex - 1) else { return }
+            
+            destinationPage = previousPage
+            let previousPageHeight = previousPage.bounds(for: displayBox).height
+            newTopPoint.y = min(newTopPoint.y - currentPageHeight - margin, previousPageHeight)
+        }
+        
+        go(to: PDFDestination(page: destinationPage, at: newTopPoint))
+    }
+    
+    func go(toTopOf page: PDFPage) {
+        guard let currentX = currentDestination?.point.x else { return }
+        
+        let currentPageHeight = page.bounds(for: displayBox).height
+        go(to: PDFDestination(page: page, at: CGPoint(x: currentX, y: currentPageHeight)))
+    }
+}

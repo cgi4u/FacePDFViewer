@@ -19,11 +19,11 @@ class WinkRecognizer: FaceGestureRecognizer {
     
     private let startShapeDifference: Double
     private let endShapeDifference: Double
-    private let side: SideOfEye
+    private let side: FaceGestureData.SideOfEye
     private let thresholdTime: TimeInterval
     var winkCountRequired = 1
     
-    init?(startShapeDifference: Double = 0.2, endShapeDifference:Double = 0.15, thresholdTime: TimeInterval = 0.5, side: SideOfEye) {
+    init?(startShapeDifference: Double = 0.2, endShapeDifference:Double = 0.15, thresholdTime: TimeInterval = 0.5, side: FaceGestureData.SideOfEye) {
         if startShapeDifference <= endShapeDifference
             || startShapeDifference < 0 || startShapeDifference > 1.0
             || endShapeDifference < 0 || endShapeDifference > 1.0 {
@@ -41,49 +41,6 @@ class WinkRecognizer: FaceGestureRecognizer {
     private var winkCount = 0
     private var isRecognizing = false
     private var multipleWinkRecognizationTimer: Timer?
-    
-    override func handleEyeBlinkShape(left: Double, right: Double) {
-        guard let delegate = delegate else { return }
-        
-        let shapeDifference: Double = {
-            switch side {
-            case .Left:
-                return left - right
-            case .Right:
-                return right - left
-            }
-        }()
-        
-        // Start recognizing one wink
-        if shapeDifference >= startShapeDifference,
-            !isRecognizing {
-            isRecognizing = true
-        }
-        
-        // End recgonizing one wink
-        if shapeDifference < endShapeDifference,
-            isRecognizing {
-            winkCount += 1
-            delegate.handleWink()
-            
-            // When required wink count is fulfilled
-            if winkCount == winkCountRequired {
-                delegate.handleWinkCountFulfilled()
-                
-                if let recognizingTimer = multipleWinkRecognizationTimer,
-                    recognizingTimer.isValid {
-                    recognizingTimer.invalidate()
-                }
-                winkCount = 0
-            } else if winkCount == 1 {
-                multipleWinkRecognizationTimer = Timer.scheduledTimer(withTimeInterval: thresholdTime, repeats: false) { [weak self] (_) in
-                    self?.winkCount = 0
-                }
-            }
-            
-            isRecognizing = false
-        }
-    }
     
     override func handleFaceGestureData(_ data: FaceGestureData) {
         guard let delegate = delegate,
@@ -108,6 +65,7 @@ class WinkRecognizer: FaceGestureRecognizer {
                 if let recognizingTimer = multipleWinkRecognizationTimer,
                     recognizingTimer.isValid {
                     recognizingTimer.invalidate()
+                    multipleWinkRecognizationTimer = nil
                 }
                 winkCount = 0
             } else if winkCount == 1 {

@@ -9,8 +9,12 @@
 import Foundation
 import ARKit
 
-//TODO: 데이터 handle 메소드 설계방법 검토
 struct FaceGestureData {
+    enum SideOfEye {
+        case Left
+        case Right
+    }
+    
     let lookPoint: CGPoint?
     let smoothedLookPoint: CGPoint?
     let leftEyeBlinkShape: Double?
@@ -47,7 +51,6 @@ class FaceGestureRecognitionSession: NSObject {
         screenGeometry.firstMaterial?.diffuse.contents = UIColor.clear
         return SCNNode(geometry: screenGeometry)
     }()
-    //private let eyeMidpointNode = SCNNode()
     
     // For calculate average points
     private var lastPoints:[simd_double2] = []
@@ -58,8 +61,6 @@ class FaceGestureRecognitionSession: NSObject {
         super.init()
         
         sceneView.scene.rootNode.addChildNode(faceNode)
-        //faceNode.addChildNode(eyeMidpointNode)
-        //virtualPhoneNode.addChildNode(virtualScreenNode)
         sceneView.pointOfView?.addChildNode(virtualScreenNode)
         
         sceneView.session.delegateQueue = DispatchQueue.main
@@ -82,7 +83,6 @@ extension FaceGestureRecognitionSession: ARSessionDelegate {
     func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
         guard let faceAnchor = anchors.compactMap({ $0 as? ARFaceAnchor }).first else { return }
         
-        
         faceNode.simdTransform = faceAnchor.transform
         
         let simdEyesMidpointPosition = (faceAnchor.leftEyeTransform[3] + faceAnchor.rightEyeTransform[3]) / 2
@@ -102,7 +102,7 @@ extension FaceGestureRecognitionSession: ARSessionDelegate {
             let xPoint = Double(screenWidth / 2 + hit.localCoordinates.x * screenWidth / UIDevice.modelMeterSize.0)
             let yPoint = Double(-hit.localCoordinates.y * screenHeight / UIDevice.modelMeterSize.1)
             lookPoint = CGPoint(x: xPoint, y: yPoint)
-            
+        
             if lastPoints.count == maxNumberOfSavedPoints {
                 totalPoint -= lastPoints[0]
                 lastPoints.remove(at: 0)
@@ -121,16 +121,6 @@ extension FaceGestureRecognitionSession: ARSessionDelegate {
         let faceGestureData = FaceGestureData(lookPoint: lookPoint, smoothedLookPoint: smoothedLookPoint, leftEyeBlinkShape: leftEyeBlinkShape, rightEyeBlinkShape: rightEyeBlinkShape)
         
         for recognizer in recognizers {
-            if let lookPoint = lookPoint,
-                let smoothedLookPoint = smoothedLookPoint {
-                recognizer.handleLookPoint(recognizer.usesSmoothedPoint ? smoothedLookPoint : lookPoint)
-            }
-            
-            if let leftBlinkShape = faceAnchor.blendShapes[.eyeBlinkLeft] as? Double,
-                let rightBlinkShape = faceAnchor.blendShapes[.eyeBlinkRight] as? Double {
-                recognizer.handleEyeBlinkShape(left: leftBlinkShape, right: rightBlinkShape)
-            }
-            
             recognizer.handleFaceGestureData(faceGestureData)
         }
     }

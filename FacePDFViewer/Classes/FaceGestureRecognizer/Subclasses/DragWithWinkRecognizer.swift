@@ -12,7 +12,6 @@ import UIKit
 protocol DragWithWinkRecognizerDelegate: class {
     func didStartToDrag()
     func didEndToDrag()
-    //func handleDragOnPoint(_ point: CGPoint)
     func handleDragOnVector(x: CGFloat, y: CGFloat)
 }
 
@@ -21,9 +20,9 @@ class DragWithWinkRecognizer: FaceGestureRecognizer {
     
     private var startShapeDifference: Double
     private var endShapeDifference: Double
-    private var side: SideOfEye
+    private var side: FaceGestureData.SideOfEye
    
-    init?(startThreshold: Double = 0.2, endThreshold: Double = 0.15, side: SideOfEye) {
+    init?(startThreshold: Double = 0.2, endThreshold: Double = 0.15, side: FaceGestureData.SideOfEye) {
         if startThreshold < endThreshold
             || startThreshold < 0 || startThreshold > 1.0
             || endThreshold < 0 || endThreshold > 1.0 {
@@ -38,45 +37,7 @@ class DragWithWinkRecognizer: FaceGestureRecognizer {
     }
     
     private var isRecognizing = false
-    
-    override func handleEyeBlinkShape(left: Double, right: Double) {
-        guard let delegate = delegate else { return }
-        
-        let shapeDifference: Double = {
-            switch side {
-            case .Left:
-                return left - right
-            case .Right:
-                return right - left
-            }
-        }()
-        
-        if !isRecognizing && shapeDifference > startShapeDifference {
-            delegate.didStartToDrag()
-            isRecognizing = true
-        }
-        
-        if isRecognizing && shapeDifference < endShapeDifference {
-            delegate.didEndToDrag()
-            lastPoint = nil
-            isRecognizing = false
-        }
-    }
-    
     var lastPoint: CGPoint?
-    
-    override func handleLookPoint(_ point: CGPoint) {
-        guard let delegate = delegate,
-            isRecognizing else { return }
-        
-        //delegate.handleDragOnPoint(point)
-        
-        if let lastPoint = lastPoint {
-            delegate.handleDragOnVector(x: point.x - lastPoint.x, y: point.y - lastPoint.y)
-        }
-        
-        lastPoint = point
-    }
     
     override func handleFaceGestureData(_ data: FaceGestureData) {
         guard let delegate = delegate else { return }
