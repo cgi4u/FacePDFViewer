@@ -59,7 +59,8 @@ class DragWithWinkRecognizer: FaceGestureRecognizer {
             isRecognizing = true
         }
         
-        if isRecognizing && shapeDifference < endShapeDifference {
+        if isRecognizing,
+            (shapeDifference < endShapeDifference || point == nil) {
             delegate.didEndToDrag()
             isRecognizing = false
         }

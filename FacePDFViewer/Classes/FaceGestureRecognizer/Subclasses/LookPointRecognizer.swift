@@ -21,5 +21,5 @@ class LookPointRecognizer: FaceGestureRecognizer {
             let point = usesSmoothedPoint ? data.smoothedLookPoint : data.lookPoint else { return }
         
         delegate.handleLookPoint(point)
-    }
+    } 
 }

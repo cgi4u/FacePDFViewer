@@ -63,7 +63,7 @@ class FaceGestureRecognitionSession: NSObject {
         sceneView.scene.rootNode.addChildNode(faceNode)
         sceneView.pointOfView?.addChildNode(virtualScreenNode)
         
-        sceneView.session.delegateQueue = DispatchQueue.main
+        //sceneView.session.delegateQueue = DispatchQueue.main
         sceneView.session.delegate = self
         sceneView.session.run(ARFaceTrackingConfiguration())
     }
@@ -103,6 +103,7 @@ extension FaceGestureRecognitionSession: ARSessionDelegate {
                                        SCNHitTestOption.searchMode.rawValue: 1,
                                        SCNHitTestOption.ignoreChildNodes.rawValue : false]
         
+        //print(GLKVector3Distance(eyesMidpointPosition, SCNVector3(faceAnchor.lookAtPoint))
         let hitResults = virtualScreenNode.hitTestWithSegment(from: virtualScreenNode.convertPosition(eyesMidpointPosition, from:faceNode), to: virtualScreenNode.convertPosition(SCNVector3(faceAnchor.lookAtPoint), from: faceNode), options: hitTestOptions)
         
         if let hit = hitResults.first {

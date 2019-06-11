@@ -8,7 +8,6 @@
 
 import UIKit
 import PDFKit
-import ARKit
 
 public extension UIDevice {
     static let modelName: String = {

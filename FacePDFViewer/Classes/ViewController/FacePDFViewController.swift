@@ -56,7 +56,7 @@ class FacePDFViewController: UIViewController {
         lookPointDotView.layer.cornerRadius = lookPointDotView.frame.width / 2
         lookPointDotView.backgroundColor = UIColor.red
         view.addSubview(lookPointDotView)
-
+        
         let arSceneView = FaceGestureRecognitionSession.shared.sceneView
         arSceneView.frame = view.frame
         arSceneView.alpha = 0.3
@@ -180,4 +180,5 @@ extension FacePDFViewController: WinkRecognizerDelegate {
         isScaledUp = !isScaledUp
     }
 }
+
  
