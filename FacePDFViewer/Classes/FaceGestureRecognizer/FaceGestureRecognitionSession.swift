@@ -40,9 +40,6 @@ class FaceGestureRecognitionSession: NSObject {
     // Not use view itself, only use scene and session attached to it.
     let sceneView = ARSCNView()
     
-    private let screenWidth = Float(UIScreen.main.bounds.width)
-    private let screenHeight = Float(UIScreen.main.bounds.height)
-    
     // SceneKit Nodes
     private let faceNode = SCNNode()
     //private let virtualPhoneNode = SCNNode()
@@ -51,6 +48,9 @@ class FaceGestureRecognitionSession: NSObject {
         screenGeometry.firstMaterial?.diffuse.contents = UIColor.clear
         return SCNNode(geometry: screenGeometry)
     }()
+    
+    private let screenWidth = Float(UIScreen.main.bounds.width)
+    private let screenHeight = Float(UIScreen.main.bounds.height)
     
     // For calculate average points
     private var lastPoints:[simd_double2] = []
@@ -82,6 +82,13 @@ class FaceGestureRecognitionSession: NSObject {
 extension FaceGestureRecognitionSession: ARSessionDelegate {
     func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
         guard let faceAnchor = anchors.compactMap({ $0 as? ARFaceAnchor }).first else { return }
+        
+        if !faceAnchor.isTracked {
+            for recognizer in recognizers {
+                recognizer.didFaceBecomeUntracked()
+            }
+            return
+        }
         
         faceNode.simdTransform = faceAnchor.transform
         

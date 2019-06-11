@@ -53,6 +53,7 @@ class FacePDFViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        lookPointDotView.layer.cornerRadius = lookPointDotView.frame.width / 2
         lookPointDotView.backgroundColor = UIColor.red
         view.addSubview(lookPointDotView)
 
@@ -87,8 +88,9 @@ class FacePDFViewController: UIViewController {
     
     private func scaleLookPointView(_ factor: CGFloat) {
         let lookPointOrigin = lookPointDotView.frame.origin
-        let lookPointDoubledSize = CGSize(width: lookPointDotView.frame.size.width * factor , height: lookPointDotView.frame.size.height * factor)
-        lookPointDotView.frame = CGRect(origin: lookPointOrigin, size: lookPointDoubledSize)
+        let lookPointScaledSize = CGSize(width: lookPointDotView.frame.size.width * factor , height: lookPointDotView.frame.size.height * factor)
+        lookPointDotView.layer.cornerRadius *= factor
+        lookPointDotView.frame = CGRect(origin: lookPointOrigin, size: lookPointScaledSize)
     }
 }
 

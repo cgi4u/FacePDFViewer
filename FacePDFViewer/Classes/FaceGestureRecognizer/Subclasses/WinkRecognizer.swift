@@ -23,7 +23,7 @@ class WinkRecognizer: FaceGestureRecognizer {
     private let thresholdTime: TimeInterval
     var winkCountRequired = 1
     
-    init?(startShapeDifference: Double = 0.2, endShapeDifference:Double = 0.15, thresholdTime: TimeInterval = 0.5, side: FaceGestureData.SideOfEye) {
+    init?(startShapeDifference: Double = 0.25, endShapeDifference:Double = 0.15, thresholdTime: TimeInterval = 0.5, side: FaceGestureData.SideOfEye) {
         if startShapeDifference <= endShapeDifference
             || startShapeDifference < 0 || startShapeDifference > 1.0
             || endShapeDifference < 0 || endShapeDifference > 1.0 {
@@ -58,6 +58,8 @@ class WinkRecognizer: FaceGestureRecognizer {
             winkCount += 1
             delegate.handleWink()
             
+            print("Wink count: \(winkCount)")
+            
             // When required wink count is fulfilled
             if winkCount == winkCountRequired {
                 delegate.handleWinkCountFulfilled()
@@ -76,5 +78,14 @@ class WinkRecognizer: FaceGestureRecognizer {
             
             isRecognizing = false
         }
+    }
+    
+    override func didFaceBecomeUntracked() {
+        if let recognizingTimer = multipleWinkRecognizationTimer,
+            recognizingTimer.isValid {
+            recognizingTimer.invalidate()
+            multipleWinkRecognizationTimer = nil
+        }
+        winkCount = 0
     }
 }

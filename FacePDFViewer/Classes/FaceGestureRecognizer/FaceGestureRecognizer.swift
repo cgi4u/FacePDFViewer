@@ -21,4 +21,5 @@ class FaceGestureRecognizer {
     }
     
     func handleFaceGestureData(_ data: FaceGestureData) { }
+    func didFaceBecomeUntracked() { }
 }

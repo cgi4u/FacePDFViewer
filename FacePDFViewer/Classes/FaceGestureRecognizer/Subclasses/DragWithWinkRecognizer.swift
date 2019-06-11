@@ -64,4 +64,13 @@ class DragWithWinkRecognizer: FaceGestureRecognizer {
             isRecognizing = false
         }
     }
+    
+    override func didFaceBecomeUntracked() {
+        guard let delegate = delegate else { return }
+        
+        if isRecognizing {
+            delegate.didEndToDrag()
+            isRecognizing = false
+        }
+    }
 }

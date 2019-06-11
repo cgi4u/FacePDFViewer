@@ -66,4 +66,10 @@ class GazeRecognizer: FaceGestureRecognizer {
             isRecognizing = false
         }
     }
+    
+    override func didFaceBecomeUntracked() {
+        if isRecognizing {
+            isRecognizing = !isRecognizing
+        }
+    }
 }
