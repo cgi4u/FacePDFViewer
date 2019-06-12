@@ -12,6 +12,7 @@
 		E2647A62229BE78300315C49 /* FaceGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2647A61229BE78300315C49 /* FaceGestureRecognizer.swift */; };
 		E267757E2292A54D00FF8C05 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E267757D2292A54D00FF8C05 /* Extensions.swift */; };
 		E2690A9122A64DC700B715F7 /* WinkRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2690A9022A64DC700B715F7 /* WinkRecognizer.swift */; };
+		E26AA8AF22B0939D00D666B4 /* sample.pdf in Resources */ = {isa = PBXBuildFile; fileRef = E26AA8AE22B0939D00D666B4 /* sample.pdf */; };
 		E2865827228BCE410097A258 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2865826228BCE410097A258 /* AppDelegate.swift */; };
 		E2865829228BCE410097A258 /* FacePDFViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2865828228BCE410097A258 /* FacePDFViewController.swift */; };
 		E286582C228BCE410097A258 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E286582A228BCE410097A258 /* Main.storyboard */; };
@@ -46,6 +47,7 @@
 		E2647A61229BE78300315C49 /* FaceGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceGestureRecognizer.swift; sourceTree = "<group>"; };
 		E267757D2292A54D00FF8C05 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		E2690A9022A64DC700B715F7 /* WinkRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WinkRecognizer.swift; sourceTree = "<group>"; };
+		E26AA8AE22B0939D00D666B4 /* sample.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = sample.pdf; sourceTree = "<group>"; };
 		E2865823228BCE410097A258 /* FacePDFViewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FacePDFViewer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E2865826228BCE410097A258 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E2865828228BCE410097A258 /* FacePDFViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FacePDFViewController.swift; sourceTree = "<group>"; };
@@ -122,6 +124,7 @@
 		E2865825228BCE410097A258 /* FacePDFViewer */ = {
 			isa = PBXGroup;
 			children = (
+				E26AA8AE22B0939D00D666B4 /* sample.pdf */,
 				E2865826228BCE410097A258 /* AppDelegate.swift */,
 				E2B8EBAD2293EA33005B56E9 /* Interfaces */,
 				E2B8EBAB2293EA04005B56E9 /* Classes */,
@@ -298,6 +301,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E26AA8AF22B0939D00D666B4 /* sample.pdf in Resources */,
 				E2865831228BCE420097A258 /* LaunchScreen.storyboard in Resources */,
 				E286582E228BCE420097A258 /* Assets.xcassets in Resources */,
 				E286582C228BCE410097A258 /* Main.storyboard in Resources */,

@@ -76,10 +76,8 @@ class FacePDFViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        guard let pdfUrl = URL(string: "http://gahp.net/wp-content/uploads/2017/09/sample.pdf"),
-            let pdfDocument = PDFDocument(url: pdfUrl) else {
-                return
-        }
+        guard let path = Bundle.main.path(forResource: "sample", ofType: "pdf"),
+            let pdfDocument = PDFDocument(url: URL(fileURLWithPath: path)) else { return }
         
         pdfView.displayMode = .singlePageContinuous
         pdfView.autoScales = true

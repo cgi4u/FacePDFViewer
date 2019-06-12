@@ -42,7 +42,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FacePDFViewer/Classes/ViewController/FacePDFViewController.swift"
-            timestampString = "581941922.793184"
+            timestampString = "581997621.88941"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "61"
@@ -182,11 +182,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FacePDFViewer/Classes/ViewController/FacePDFViewController.swift"
-            timestampString = "581941922.7934231"
+            timestampString = "581997621.8899471"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "141"
-            endingLineNumber = "141"
+            startingLineNumber = "146"
+            endingLineNumber = "146"
             landmarkName = "didGazeOverThresholdTime(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -198,39 +198,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FacePDFViewer/Classes/FaceGestureRecognizer/FaceGestureRecognitionSession.swift"
-            timestampString = "581941922.793552"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "87"
-            endingLineNumber = "87"
-            landmarkName = "session(_:didUpdate:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "FacePDFViewer/Classes/ViewController/FacePDFViewController.swift"
-            timestampString = "581941922.7964621"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "116"
-            endingLineNumber = "116"
-            landmarkName = "handleDragOnVector(x:y:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "FacePDFViewer/Classes/FaceGestureRecognizer/FaceGestureRecognitionSession.swift"
-            timestampString = "581941922.7966191"
+            timestampString = "581997621.890187"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "88"
@@ -246,11 +214,43 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FacePDFViewer/Classes/ViewController/FacePDFViewController.swift"
-            timestampString = "581941922.797047"
+            timestampString = "581997621.890232"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "92"
-            endingLineNumber = "92"
+            startingLineNumber = "121"
+            endingLineNumber = "121"
+            landmarkName = "handleDragOnVector(x:y:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "FacePDFViewer/Classes/FaceGestureRecognizer/FaceGestureRecognitionSession.swift"
+            timestampString = "581997621.890435"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "89"
+            endingLineNumber = "89"
+            landmarkName = "session(_:didUpdate:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "FacePDFViewer/Classes/ViewController/FacePDFViewController.swift"
+            timestampString = "581997621.8904769"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "97"
+            endingLineNumber = "97"
             landmarkName = "scaleLookPointView(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -262,11 +262,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "FacePDFViewer/Classes/ViewController/FacePDFViewController.swift"
-            timestampString = "581941922.797157"
+            timestampString = "581997621.890684"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "115"
-            endingLineNumber = "115"
+            startingLineNumber = "120"
+            endingLineNumber = "120"
             landmarkName = "handleDragOnVector(x:y:)"
             landmarkType = "7">
          </BreakpointContent>

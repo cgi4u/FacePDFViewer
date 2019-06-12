@@ -58,8 +58,6 @@ class WinkRecognizer: FaceGestureRecognizer {
             winkCount += 1
             delegate.handleWink()
             
-            print("Wink count: \(winkCount)")
-            
             // When required wink count is fulfilled
             if winkCount == winkCountRequired {
                 delegate.handleWinkCountFulfilled()
