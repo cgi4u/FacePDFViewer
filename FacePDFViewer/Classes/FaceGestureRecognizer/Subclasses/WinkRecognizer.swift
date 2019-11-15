@@ -56,11 +56,16 @@ class WinkRecognizer: FaceGestureRecognizer {
         if shapeDifference < endShapeDifference,
             isRecognizing {
             winkCount += 1
-            delegate.handleWink()
+            
+            DispatchQueue.main.async {
+                delegate.handleWink()
+            }
             
             // When required wink count is fulfilled
             if winkCount == winkCountRequired {
-                delegate.handleWinkCountFulfilled()
+                DispatchQueue.main.async {
+                    delegate.handleWinkCountFulfilled()
+                }
                 
                 if let recognizingTimer = multipleWinkRecognizationTimer,
                     recognizingTimer.isValid {

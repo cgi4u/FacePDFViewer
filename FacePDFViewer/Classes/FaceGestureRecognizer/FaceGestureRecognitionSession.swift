@@ -33,6 +33,14 @@ struct FaceGestureData {
     }
 }
 
+class FaceGestureRecognitionSessionObserver {
+    weak var recognizer: FaceGestureRecognizer?
+        
+    init(_ recogninzer: FaceGestureRecognizer) {
+        self.recognizer = recogninzer
+    }
+}
+
 // The singleton instance observed by all recognizers.
 class FaceGestureRecognitionSession: NSObject {
     static let shared = FaceGestureRecognitionSession()
@@ -53,12 +61,15 @@ class FaceGestureRecognitionSession: NSObject {
     private let screenHeight = Float(UIScreen.main.bounds.height)
     
     // For calculate average points
-    private var lastPoints:[simd_double2] = []
     private let maxNumberOfSavedPoints = 10
+    private var lastPoints: [simd_double2] = []
+    private var nextPointIndex = 0
     private var totalPoint = simd_double2(0, 0)
 
     private override init() {
         super.init()
+        
+        lastPoints += [simd_double2](repeating: simd_double2(0, 0), count: maxNumberOfSavedPoints)
         
         sceneView.scene.rootNode.addChildNode(faceNode)
         sceneView.pointOfView?.addChildNode(virtualScreenNode)
@@ -69,14 +80,12 @@ class FaceGestureRecognitionSession: NSObject {
         sceneView.session.run(configuration)
     }
     
-    private var recognizers: [FaceGestureRecognizer] = []
+    // MARK: Recognizer Managing
     
-    static func addRecognizer(_ recognizer: FaceGestureRecognizer) {
-        shared.recognizers.append(recognizer)
-    }
+    private var observers: [FaceGestureRecognitionSessionObserver] = []
     
-    static func removeRecognizer(_ recognizer: FaceGestureRecognizer) {
-        shared.recognizers = shared.recognizers.filter { $0 !== recognizer }
+    static func addRecognizer(_ observer: FaceGestureRecognitionSessionObserver) {
+        shared.observers.append(observer)
     }
 }
 
@@ -85,9 +94,20 @@ extension FaceGestureRecognitionSession: ARSessionDelegate {
         guard let faceAnchor = anchors.compactMap({ $0 as? ARFaceAnchor }).first else { return }
         
         if !faceAnchor.isTracked {
-            for recognizer in recognizers {
+            var needToFilter = false
+            for observer in observers {
+                guard let recognizer = observer.recognizer else {
+                    needToFilter = true
+                    continue
+                }
+                
                 recognizer.didFaceBecomeUntracked()
             }
+            
+            if needToFilter {
+                observers = observers.filter { $0.recognizer != nil }
+            }
+            
             return
         }
         
@@ -107,18 +127,15 @@ extension FaceGestureRecognitionSession: ARSessionDelegate {
         let hitResults = virtualScreenNode.hitTestWithSegment(from: virtualScreenNode.convertPosition(eyesMidpointPosition, from:faceNode), to: virtualScreenNode.convertPosition(SCNVector3(faceAnchor.lookAtPoint), from: faceNode), options: hitTestOptions)
         
         if let hit = hitResults.first {
-            let xPoint = Double(screenWidth / 2 + hit.localCoordinates.x * screenWidth / UIDevice.modelMeterSize.0)
-            let yPoint = Double(-hit.localCoordinates.y * screenHeight / UIDevice.modelMeterSize.1)
+            let xPoint = Double(screenWidth / 2 + hit.localCoordinates.x * screenWidth / UIDevice.modelMeterSize.x)
+            let yPoint = Double(-hit.localCoordinates.y * screenHeight / UIDevice.modelMeterSize.y)
             lookPoint = CGPoint(x: xPoint, y: yPoint)
-        
-            if lastPoints.count == maxNumberOfSavedPoints {
-                totalPoint -= lastPoints[0]
-                lastPoints.remove(at: 0)
-            }
             
             // Apply smoothing to the current looking point.
-            lastPoints.append(simd_double2(xPoint, yPoint))
-            totalPoint += lastPoints[lastPoints.count - 1]
+            totalPoint -= lastPoints[nextPointIndex]
+            lastPoints[nextPointIndex] = simd_double2(xPoint, yPoint)
+            totalPoint += lastPoints[nextPointIndex]
+            nextPointIndex = (nextPointIndex + 1) % 10
             
             smoothedLookPoint = CGPoint(x: totalPoint.x / Double(lastPoints.count), y: totalPoint.y / Double(lastPoints.count))
         }
@@ -128,8 +145,18 @@ extension FaceGestureRecognitionSession: ARSessionDelegate {
   
         let faceGestureData = FaceGestureData(lookPoint: lookPoint, smoothedLookPoint: smoothedLookPoint, leftEyeBlinkShape: leftEyeBlinkShape, rightEyeBlinkShape: rightEyeBlinkShape)
         
-        for recognizer in recognizers {
+        var needToFilter = false
+        for observer in observers {
+            guard let recognizer = observer.recognizer else {
+                needToFilter = true
+                continue
+            }
+            
             recognizer.handleFaceGestureData(faceGestureData)
+        }
+        
+        if needToFilter {
+            observers = observers.filter { $0.recognizer != nil }
         }
     }
 }

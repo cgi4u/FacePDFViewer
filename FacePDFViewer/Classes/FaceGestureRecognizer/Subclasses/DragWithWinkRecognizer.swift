@@ -47,7 +47,9 @@ class DragWithWinkRecognizer: FaceGestureRecognizer {
         if let lastPoint = lastPoint,
             let point = point,
             isRecognizing {
-            delegate.handleDragOnVector(x: point.x - lastPoint.x, y: point.y - lastPoint.y)
+            DispatchQueue.main.async {
+                delegate.handleDragOnVector(x: point.x - lastPoint.x, y: point.y - lastPoint.y)
+            }
         }
         
         lastPoint = point
@@ -55,13 +57,17 @@ class DragWithWinkRecognizer: FaceGestureRecognizer {
         guard let shapeDifference = data.eyeBlinkShapeDifferenece(for: side) else { return }
         
         if !isRecognizing && shapeDifference > startShapeDifference {
-            delegate.didStartToDrag()
+            DispatchQueue.main.async {
+                delegate.didStartToDrag()
+            }
             isRecognizing = true
         }
         
         if isRecognizing,
             (shapeDifference < endShapeDifference || point == nil) {
-            delegate.didEndToDrag()
+            DispatchQueue.main.async {
+                delegate.didEndToDrag()
+            }
             isRecognizing = false
         }
     }
@@ -70,7 +76,9 @@ class DragWithWinkRecognizer: FaceGestureRecognizer {
         guard let delegate = delegate else { return }
         
         if isRecognizing {
-            delegate.didEndToDrag()
+            DispatchQueue.main.async {
+                delegate.didEndToDrag()
+            }
             isRecognizing = false
         }
     }

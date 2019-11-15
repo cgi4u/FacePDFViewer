@@ -35,10 +35,14 @@ class GazeRecognizer: FaceGestureRecognizer {
             
             if isRecognizing && !oldValue {
                 startTime = CACurrentMediaTime()
-                delegate.didStartToGaze(self)
+                DispatchQueue.main.async {
+                    delegate.didStartToGaze(self)
+                }
             } else if !isRecognizing && oldValue {
                 startTime = nil
-                delegate.didEndToGaze(self)
+                DispatchQueue.main.async {
+                    delegate.didEndToGaze(self)
+                }
             }
         }
     }
@@ -53,10 +57,14 @@ class GazeRecognizer: FaceGestureRecognizer {
             if let startTime = startTime,
                 isRecognizing {
                 let elapsedTime = CACurrentMediaTime() - startTime
-                delegate.handleGaze(self, elapsedTime: elapsedTime)
+                DispatchQueue.main.async {
+                    delegate.handleGaze(self, elapsedTime: elapsedTime)
+                }
                 
                 if elapsedTime > thresholdTime {
-                    delegate.didGazeOverThresholdTime(self)
+                    DispatchQueue.main.async {
+                        delegate.didGazeOverThresholdTime(self)
+                    }
                     self.startTime = CACurrentMediaTime()
                 }
             } else {

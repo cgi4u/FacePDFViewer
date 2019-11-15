@@ -8,6 +8,7 @@
 
 import UIKit
 import PDFKit
+import simd
 
 public extension UIDevice {
     static let modelName: String = {
@@ -82,16 +83,16 @@ public extension UIDevice {
         return mapToDevice(identifier: identifier)
     }()
     
-    static let modelMeterSize: (Float, Float) = {
+    static let modelMeterSize: vector_float2 = {
         switch modelName {
         case "iPhone X", "iPhone XS":
-            return (0.062, 0.135)
+            return vector_float2(0.062, 0.135)
         case "iPhone XR":
-            return (0.3, 0.3)
+            return vector_float2(0.3, 0.3)
         case "iPhone XS Max":
-            return (0.4, 0.4)
+            return vector_float2(0.4, 0.4)
         default:
-            return (-1, -1)
+            return vector_float2(-1, -1)
         }
     }()
 }

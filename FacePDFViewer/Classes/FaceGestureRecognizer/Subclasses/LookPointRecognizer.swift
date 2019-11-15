@@ -20,6 +20,8 @@ class LookPointRecognizer: FaceGestureRecognizer {
         guard let delegate = delegate,
             let point = usesSmoothedPoint ? data.smoothedLookPoint : data.lookPoint else { return }
         
-        delegate.handleLookPoint(point)
+        DispatchQueue.main.async {
+            delegate.handleLookPoint(point)
+        }
     } 
 }

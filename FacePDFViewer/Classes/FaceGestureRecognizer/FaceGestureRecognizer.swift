@@ -10,16 +10,13 @@ import Foundation
 import UIKit
 
 class FaceGestureRecognizer {
-    var usesSmoothedPoint = true
+    var usesSmoothedPoint: Bool
     
     init() {
-        FaceGestureRecognitionSession.addRecognizer(self)
+        usesSmoothedPoint = true
+        FaceGestureRecognitionSession.addRecognizer(FaceGestureRecognitionSessionObserver(self))
     }
-    
-    deinit {
-        FaceGestureRecognitionSession.removeRecognizer(self)
-    }
-    
+
     func handleFaceGestureData(_ data: FaceGestureData) { }
     func didFaceBecomeUntracked() { }
 }

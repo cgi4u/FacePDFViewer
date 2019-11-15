@@ -17,7 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         if !ARFaceTrackingConfiguration.isSupported {
-            //fatalError("Face traking configuration is not supported in this device.")
+            fatalError("Face traking configuration is not supported in this device.")
         }
         
         return true
